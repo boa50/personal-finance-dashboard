@@ -1,0 +1,27 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --foreground-hex: #000000;
+  --background-start-hex: #1a6ded;
+  --background-end-hex: #0f52ba;
+  --axis-hex: #E5E4E2
+}
+
+body {
+  color: rgb(var(--foreground-hex));
+  background: linear-gradient(to bottom,
+      transparent,
+      var(--background-end-hex)) var(--background-start-hex);
+}
+
+.axis-line {
+  stroke: var(--axis-hex);
+}
+
+.axis-text {
+  fill: var(--axis-hex);
+  text-anchor: middle;
+  font-size: 10px;
+}
