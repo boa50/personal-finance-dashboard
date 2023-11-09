@@ -16,3 +16,9 @@ export interface VariableIncome {
     lucro: number,
     total_investido: string, 
 }
+
+export interface InteractionData {
+    xPos: number;
+    yPos: number;
+    name: string;
+}

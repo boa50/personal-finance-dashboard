@@ -1,5 +1,5 @@
 import { BigQuery } from '@google-cloud/bigquery'
-import { VariableIncome } from "../aux/interfaces"
+import { VariableIncome } from "../aux/Interfaces"
 
 export const getVariableIncome: (() => Promise<VariableIncome[]>) = async ()  => {
     const query = 'SELECT * FROM `boa-dashboards.dbt_semantic_layer_personal_finance.renda_variavel`'

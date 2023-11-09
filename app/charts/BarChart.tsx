@@ -1,7 +1,11 @@
 // Base code got from: https://www.react-graph-gallery.com/barplot
+'use client'
 
 import * as d3 from 'd3'
-import { useMemo } from 'react'
+import { useMemo, useState } from 'react'
+import { InteractionData } from '../aux/Interfaces'
+import { Tooltip } from '../aux/Tooltip'
+import { BRL } from '../aux/Formats'
 
 interface ChartProps {
     data: {label: string, value: number, category: string}[],
@@ -11,18 +15,21 @@ interface ChartProps {
     }
 }
 
+const margin = {
+    left: 16,
+    right: 16,
+    top: 16,
+    bottom: 16
+}
+const barPadding = 0.2
+
 const BarChart = (props: ChartProps) => {
     const svgWidth = props.svgDims.width
     const svgHeight = props.svgDims.height
-    const margin = {
-        left: 16,
-        right: 16,
-        top: 16,
-        bottom: 16
-    }
     const width = svgWidth - margin.left - margin.right
     const height = svgHeight - margin.top - margin.bottom
-    const barPadding = 0.2
+
+    const [interactionData, setInteractiondata] = useState<InteractionData | null>(null) 
 
     const data = props.data
 
@@ -41,7 +48,7 @@ const BarChart = (props: ChartProps) => {
             .domain(labels)
             .range([0, height])
             .padding(barPadding)
-    }, [data, height, barPadding])
+    }, [data, height])
 
     const colour = useMemo(() => {
         const categories = [...new Set(data.map(d => d.category))]
@@ -59,23 +66,31 @@ const BarChart = (props: ChartProps) => {
         }
     
         return (
-            <g key={i}>
+            <g key={i}
+                onMouseEnter={() =>
+                    setInteractiondata({
+                        xPos: x(d.value),
+                        yPos: y(d.label) as number,
+                        name: BRL.format(d.value)
+                    })
+                }
+                onMouseLeave={() => setInteractiondata(null)}
+            >
                 <rect
                     x={x(0)}
                     y={y(d.label)}
                     width={x(d.value)}
                     height={y.bandwidth()}
                     fill={colour(d.category) as string}
-                    fillOpacity={0.7}
+                    fillOpacity={0.9}
                     rx={1}
+                    
                 />
                 <text
                     x={x(0) + 7}
                     y={yPos + y.bandwidth() / 2}
-                    textAnchor="start"
-                    fill='yellow'
-                    alignmentBaseline="central"
-                    fontSize={12}
+                    className='axis-label'
+                    alignmentBaseline='central'
                 >
                     {d.label}
                 </text>
@@ -111,15 +126,27 @@ const BarChart = (props: ChartProps) => {
         )))]
 
     return (
-        <svg width={svgWidth} height={svgHeight} id="barchart">
-            <g 
-                width={width}
-                height={height}
-                transform={`translate(${[margin.left, margin.top].join(',')})`}>
-                {bars}
-                {xAxis}
-            </g>
-        </svg>
+        <div style={{ position: 'relative' }}>
+            <svg width={svgWidth} height={svgHeight} id='barchart'>
+                <g 
+                    width={width}
+                    height={height}
+                    transform={`translate(${[margin.left, margin.top].join(',')})`}>
+                    {bars}
+                    {xAxis}
+                </g>
+            </svg>
+            <Tooltip 
+                interactionData={interactionData} 
+                dims={{ 
+                    width: width, 
+                    height: height, 
+                    margin:{ 
+                        left: margin.left, 
+                        top: margin.top 
+                    } 
+                }} />
+        </div>
     )
 }
 

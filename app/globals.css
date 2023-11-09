@@ -3,14 +3,16 @@
 @tailwind utilities;
 
 :root {
-  --foreground-hex: #000000;
-  --background-start-hex: #1a6ded;
-  --background-end-hex: #0f52ba;
+  --foreground-hex: #FFFFFF;
+  /* --background-start-hex: #1a6ded;
+  --background-end-hex: #0f52ba; */
+  --background-start-hex: #28282B;
+  --background-end-hex: #000000;
   --axis-hex: #E5E4E2
 }
 
 body {
-  color: rgb(var(--foreground-hex));
+  color: var(--foreground-hex);
   background: linear-gradient(to bottom,
       transparent,
       var(--background-end-hex)) var(--background-start-hex);
@@ -24,4 +26,22 @@ body {
   fill: var(--axis-hex);
   text-anchor: middle;
   font-size: 10px;
+}
+
+.axis-label {
+  fill: var(--axis-hex);
+  text-anchor: start;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.tooltip {
+  position: absolute;
+  background-color: rgba(0, 0, 0, 0.8);
+  border-radius: 4px;
+  color: white;
+  font-size: 12px;
+  padding: 4px;
+  margin-left: 15px;
+  transform: translateX(-50%);
 }

@@ -1,6 +1,6 @@
 import { ConfigProvider } from 'antd'
 import theme from '@/theme/themeConfig'
-import BarChart from './charts/barChart'
+import BarChart from './charts/BarChart'
 import { getVariableIncome } from './data/data'
 
 const Home = async() => {
