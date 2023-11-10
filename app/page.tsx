@@ -1,10 +1,12 @@
 import { ConfigProvider } from 'antd'
 import theme from '@/theme/themeConfig'
-import BarChart from './charts/BarChart'
 import { getVariableIncome } from './data/data'
+import BarChart from './charts/BarChart'
+import Card from './charts/Card'
 
 const Home = async() => {
     const data = await getVariableIncome()
+    const totalInvested = data.reduce((total, d) => total + +d.total_investido, 0)
     const dtFiltered = data
         .filter(d => d.tipo === 'FII')
         .map(
@@ -19,6 +21,12 @@ const Home = async() => {
         <ConfigProvider theme={theme}>
             <main className="flex min-h-screen flex-col items-center p-8">
                 <h1>Financial Dashboard</h1>
+                <div className="flex min-w-full flex-row items-stretch p-4">
+                    <Card 
+                        title='Total Invested'
+                        value={totalInvested}
+                        format='BRL'/>
+                </div>
                 <div className="flex min-w-full flex-row items-stretch p-4">
                     <BarChart 
                         title='FIIs' 
