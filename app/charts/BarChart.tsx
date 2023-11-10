@@ -2,10 +2,11 @@
 'use client'
 
 import * as d3 from 'd3'
-import { createElement, useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 import { InteractionData } from '../aux/Interfaces'
 import { Tooltip } from '../aux/Tooltip'
 import { BRL } from '../aux/Formats'
+import { colourScheme, margin, barPadding } from '../aux/Constants'
 
 interface ChartProps {
     data: {label: string, value: number, category: string}[],
@@ -15,23 +16,13 @@ interface ChartProps {
     }
 }
 
-const margin = {
-    left: 16,
-    right: 16,
-    top: 16,
-    bottom: 16
-}
-const barPadding = 0.2
-
-const BarChart = (props: ChartProps) => {
-    const svgWidth = props.svgDims.width
-    const svgHeight = props.svgDims.height
+const BarChart = ({ data, svgDims }: ChartProps) => {
+    const svgWidth = svgDims.width
+    const svgHeight = svgDims.height
     const width = svgWidth - margin.left - margin.right
     const height = svgHeight - margin.top - margin.bottom
 
     const [interactionData, setInteractiondata] = useState<InteractionData | null>(null) 
-
-    const data = props.data
 
     const x = useMemo(() => {
         return d3
@@ -50,14 +41,14 @@ const BarChart = (props: ChartProps) => {
             .padding(barPadding)
     }, [data, height])
 
-    const colour = useMemo(() => {
-        const categories = [...new Set(data.map(d => d.category))]
+    const categories = useMemo(() => {return [...new Set(data.map(d => d.category))]}, [data]) 
 
+    const colour = useMemo(() => {
         return d3
             .scaleOrdinal()
             .domain(categories)
-            .range(d3.schemeTableau10)
-    }, [data])
+            .range(colourScheme)
+    }, [categories])
 
     const bars = data.map((d, i) => {
         const yPos = y(d.label)
@@ -71,7 +62,7 @@ const BarChart = (props: ChartProps) => {
                     setInteractiondata({
                         xPos: x(d.value),
                         yPos: y(d.label) as number,
-                        label: d.label,
+                        label: `${d.label} (${d.category})`,
                         value: BRL.format(d.value)
                     })
                 }
@@ -84,9 +75,7 @@ const BarChart = (props: ChartProps) => {
                     height={y.bandwidth()}
                     fill={colour(d.category) as string}
                     fillOpacity={0.9}
-                    rx={1}
-                    
-                />
+                    rx={3} />
                 <text
                     x={x(0) + 7}
                     y={yPos + y.bandwidth() / 2}
@@ -125,6 +114,37 @@ const BarChart = (props: ChartProps) => {
                 </text>
             </g>
         )))]
+    
+
+    const legend = <g className='legend'>
+        <rect 
+            fill='white' 
+            x={width - 155}
+            y={height - 150}
+            width={Math.max(...(categories.map(d => d.length))) * 8 + 15}
+            height={categories.length * 22}
+            fillOpacity={0.15}
+        />
+        {categories.map((d, i) => (
+            <g key={`legend-${i}`}>
+                <rect
+                    x={width - 147}
+                    y={height - 140 + i * 20}
+                    width={12}
+                    height={12}
+                    fill={colour(d) as string}
+                    fillOpacity={0.9}
+                    rx={3}
+                />
+                <text
+                    x={width - 130}
+                    y={height - 130 + i * 20}
+                >
+                    {d}
+                </text>
+            </g>
+        ))}
+    </g>
 
     return (
         <div style={{ position: 'relative' }}>
@@ -135,6 +155,7 @@ const BarChart = (props: ChartProps) => {
                     transform={`translate(${[margin.left, margin.top].join(',')})`}>
                     {bars}
                     {xAxis}
+                    {legend}
                 </g>
             </svg>
             <Tooltip 

@@ -35,6 +35,13 @@ body {
   font-weight: 600;
 }
 
+.legend {
+  fill: var(--axis-hex);
+  text-anchor: start;
+  font-size: 12px;
+  font-weight: 600;
+}
+
 .tooltip {
   position: absolute;
   background-color: rgba(0, 0, 0, 0.8);
