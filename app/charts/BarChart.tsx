@@ -7,16 +7,18 @@ import { InteractionData } from '../aux/Interfaces'
 import { Tooltip } from '../aux/Tooltip'
 import { BRL } from '../aux/Formats'
 import { colourScheme, margin, barPadding } from '../aux/Constants'
+import BaseChart from './BaseChart'
 
 interface ChartProps {
     data: {label: string, value: number, category: string}[],
     svgDims: {
         width: number,
         height: number
-    }
+    },
+    title: string
 }
 
-const BarChart = ({ data, svgDims }: ChartProps) => {
+const BarChart = ({ data, svgDims, title }: ChartProps) => {
     const svgWidth = svgDims.width
     const svgHeight = svgDims.height
     const width = svgWidth - margin.left - margin.right
@@ -147,28 +149,30 @@ const BarChart = ({ data, svgDims }: ChartProps) => {
     </g>
 
     return (
-        <div style={{ position: 'relative' }}>
-            <svg width={svgWidth} height={svgHeight} id='barchart'>
-                <g 
-                    width={width}
-                    height={height}
-                    transform={`translate(${[margin.left, margin.top].join(',')})`}>
-                    {bars}
-                    {xAxis}
-                    {legend}
-                </g>
-            </svg>
-            <Tooltip 
-                interactionData={interactionData} 
-                dims={{ 
-                    width: width, 
-                    height: height, 
-                    margin:{ 
-                        left: margin.left, 
-                        top: margin.top 
-                    } 
-                }} />
-        </div>
+        <BaseChart title={title}>
+            <div style={{ position: 'relative' }}>
+                <svg width={svgWidth} height={svgHeight} id='barchart'>
+                    <g 
+                        width={width}
+                        height={height}
+                        transform={`translate(${[margin.left, margin.top].join(',')})`}>
+                        {bars}
+                        {xAxis}
+                        {legend}
+                    </g>
+                </svg>
+                <Tooltip 
+                    interactionData={interactionData} 
+                    dims={{ 
+                        width: width, 
+                        height: height, 
+                        margin:{ 
+                            left: margin.left, 
+                            top: margin.top 
+                        } 
+                    }} />
+            </div>
+        </BaseChart>
     )
 }
 

@@ -18,6 +18,10 @@ body {
       var(--background-end-hex)) var(--background-start-hex);
 }
 
+h1 {
+  font-size: 1.5em;
+}
+
 .axis-line {
   stroke: var(--axis-hex);
 }

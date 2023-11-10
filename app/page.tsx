@@ -17,9 +17,14 @@ const Home = async() => {
 
     return (
         <ConfigProvider theme={theme}>
-            <main className="flex min-h-screen flex-col items-center p-12">
+            <main className="flex min-h-screen flex-col items-center p-8">
                 <h1>Financial Dashboard</h1>
-                <BarChart data={dtFiltered} svgDims={{ width: 700, height: 500 }} />
+                <div className="flex min-w-full flex-row items-stretch p-4">
+                    <BarChart 
+                        title='FIIs' 
+                        data={dtFiltered} 
+                        svgDims={{ width: 700, height: 500 }} />
+                </div>
             </main>
         </ConfigProvider>
     )
