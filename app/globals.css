@@ -43,5 +43,9 @@ body {
   font-size: 12px;
   padding: 4px;
   margin-left: 15px;
-  transform: translateX(-50%);
+  transform: translate(-50%, -25%);
+}
+
+.tooltip>.label {
+  font-weight: 700;
 }

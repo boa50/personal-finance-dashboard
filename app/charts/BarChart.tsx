@@ -2,7 +2,7 @@
 'use client'
 
 import * as d3 from 'd3'
-import { useMemo, useState } from 'react'
+import { createElement, useMemo, useState } from 'react'
 import { InteractionData } from '../aux/Interfaces'
 import { Tooltip } from '../aux/Tooltip'
 import { BRL } from '../aux/Formats'
@@ -71,7 +71,8 @@ const BarChart = (props: ChartProps) => {
                     setInteractiondata({
                         xPos: x(d.value),
                         yPos: y(d.label) as number,
-                        name: BRL.format(d.value)
+                        label: d.label,
+                        value: BRL.format(d.value)
                     })
                 }
                 onMouseLeave={() => setInteractiondata(null)}

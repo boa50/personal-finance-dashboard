@@ -37,7 +37,10 @@ export const Tooltip = ({ interactionData, dims }: TooltipProps) => {
                     top: interactionData.yPos
                 }}
             >
-                {interactionData.name}
+                <div className='label'>
+                    {interactionData.label}
+                </div>
+                {interactionData.value}
             </div>
         </div>
     )

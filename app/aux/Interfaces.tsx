@@ -20,5 +20,6 @@ export interface VariableIncome {
 export interface InteractionData {
     xPos: number;
     yPos: number;
-    name: string;
+    label: string;
+    value: string
 }
