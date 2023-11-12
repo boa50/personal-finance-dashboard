@@ -3,6 +3,7 @@ import theme from '@/theme/themeConfig'
 import { getVariableIncome } from './data/data'
 import BarChart from './charts/BarChart'
 import Card from './charts/Card'
+import TreemapChart from './charts/TreemapChart'
 
 const Home = async() => {
     const data = await getVariableIncome()
@@ -39,6 +40,10 @@ const Home = async() => {
                         format='Percentage'/>
                 </div>
                 <div className="flex min-w-full flex-row items-stretch p-4">
+                    <TreemapChart
+                        title='Test'
+                        data={dtFiltered}
+                        svgDims={{ width: 700, height: 500 }} />
                     <BarChart 
                         title='FIIs' 
                         data={dtFiltered} 

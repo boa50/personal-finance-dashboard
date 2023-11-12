@@ -23,3 +23,18 @@ export interface InteractionData {
     label: string;
     value: string
 }
+
+export interface TreeNode {
+    type: 'node';
+    value: number;
+    label: string;
+    children: Tree[];
+  };
+
+export interface TreeLeaf {
+    type: 'leaf';
+    label: string;
+    value: number;
+  };
+  
+export type Tree = TreeNode | TreeLeaf;

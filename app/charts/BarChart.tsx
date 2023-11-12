@@ -6,7 +6,7 @@ import { useMemo, useState } from 'react'
 import { InteractionData } from '../aux/Interfaces'
 import { Tooltip } from '../aux/Tooltip'
 import { BRL } from '../aux/Formats'
-import { colourScheme, margin, barPadding } from '../aux/Constants'
+import { colourSchemeCategorical, margin, barPadding } from '../aux/Constants'
 import BaseChart from './BaseChart'
 
 interface ChartProps {
@@ -49,7 +49,7 @@ const BarChart = ({ data, svgDims, title }: ChartProps) => {
         return d3
             .scaleOrdinal()
             .domain(categories)
-            .range(colourScheme)
+            .range(colourSchemeCategorical)
     }, [categories])
 
     const bars = data.map((d, i) => {
@@ -151,7 +151,7 @@ const BarChart = ({ data, svgDims, title }: ChartProps) => {
     return (
         <BaseChart title={title}>
             <div style={{ position: 'relative' }}>
-                <svg width={svgWidth} height={svgHeight} id='barchart'>
+                <svg width={svgWidth} height={svgHeight} id={`barchart-${title}`}>
                     <g 
                         width={width}
                         height={height}
