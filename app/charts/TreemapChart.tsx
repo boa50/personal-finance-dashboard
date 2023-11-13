@@ -8,7 +8,7 @@ import { Tree, TreeNode } from '../aux/Interfaces'
 import { BRL } from '../aux/Formats'
 
 interface ChartProps {
-    data: {label: string, value: number, category: string}[],
+    data: Array<Tree>,
     svgDims: {
         width: number,
         height: number
@@ -23,25 +23,11 @@ const TreemapChart = ({ data, svgDims, title }: ChartProps) => {
     const height = svgHeight - margin.top - margin.bottom
 
     const hierarchy = useMemo(() => {
-        const entries = Object.entries(
-            data.reduce((r, a) => {
-                r[a.category] = r[a.category] || []
-                r[a.category].push(a)
-                return r
-            }, Object.create(null))
-        ) as Array<[string, [{value: number}]]>
-
         const tree: Tree = {
             type: 'node',
             label: 'all',
             value: 0,
-            children: entries.map((d) => {
-                return {
-                    type: 'leaf',
-                    label: d[0],
-                    value: d[1].reduce((total: number, d) => total + +d.value, 0)
-                }
-            }).sort((a, b) => +b.value - +a.value) as Array<Tree>
+            children: data
         }
 
         return d3.hierarchy(tree).sum((d) => d.value)

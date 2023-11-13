@@ -17,6 +17,13 @@ export interface Stock {
     total_invested: string, 
 }
 
+// CHARTS
+export interface Bar {
+  label: string, 
+  value: number, 
+  category: string
+}
+
 export interface InteractionData {
     xPos: number;
     yPos: number;
@@ -38,3 +45,4 @@ export interface TreeLeaf {
   };
   
 export type Tree = TreeNode | TreeLeaf;
+
