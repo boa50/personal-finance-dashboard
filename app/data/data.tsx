@@ -1,8 +1,9 @@
 import { BigQuery } from '@google-cloud/bigquery'
-import { Bar, Stock, Tree } from "../aux/Interfaces"
+import { Bar, Exchange, Stock, Tree } from "../aux/Interfaces"
 
 const tables = {
-    stocks: '`boa-dashboards.dbt_semantic_layer_personal_finance.stocks`'
+    stocks: '`boa-dashboards.dbt_semantic_layer_personal_finance.stocks`',
+    exchange: '`boa-dashboards.dbt_semantic_layer_personal_finance.exchange`'
 }
 
 const options = {
@@ -48,13 +49,20 @@ const getTreemapData: (() => Promise<Array<Tree>>) = async () =>
     getResults(
         `SELECT 
             'leaf' AS type, 
-            fii_sector AS label, 
+            CASE
+                WHEN type = 'FII' THEN 'FII'
+                WHEN country = 'BR' THEN 'Stocks BR'
+            ELSE 'Stocks Int'
+            END AS label,
+            country,
             SUM(total_invested) AS value
-        FROM ${tables.stocks} 
-        WHERE type = 'FII'
-        GROUP BY fii_sector
-        ORDER BY value desc`
+        FROM ${tables.stocks}
+        GROUP BY label, country`
     )
+
+const getExchangeData: (() => Promise<Array<Exchange>>) = async () =>
+    getResults(`SELECT * FROM ${tables.exchange}`)
+
 
 interface GetData {
     totalInvested: number, 
@@ -65,13 +73,29 @@ interface GetData {
 }
 
 export const getData: (() => Promise<GetData>) = async () => {
+    const exchange = await getExchangeData()
+    const convertToBrl = (value: number, country: string) => {
+        const filteredExch = exchange.filter(f => f.from == country)
+
+        return country !== 'BR' ? value * +filteredExch[0].rate : value
+    }
+
     const data = await getStocks()
-    const totalInvested = data.reduce((total, d) => total + +d.total_invested, 0)
-    const totalBought = data.reduce((total, d) => total + +d.balance, 0)
+    const totalInvested = data.reduce((total, d) => total + convertToBrl(+d.total_invested, d.country), 0)
+    const totalBought = data.reduce((total, d) => total + convertToBrl(+d.balance, d.country), 0)
     const profit = totalInvested - totalBought
     const profitMargin = profit / totalBought
     const fiiData = await getFiis()
-    const treemapData = await getTreemapData()
+    let treemapData = await getTreemapData()
+
+    treemapData = treemapData
+        .map(d => {
+            return {
+                ...d,
+                value: convertToBrl(+d.value, d.country)
+            }
+        })
+        .sort((a, b) => b.value - a.value)
 
     return { totalInvested, profit, profitMargin, fiiData, treemapData }
 }
