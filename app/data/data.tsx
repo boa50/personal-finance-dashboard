@@ -1,9 +1,10 @@
 import { BigQuery } from '@google-cloud/bigquery'
-import { Bar, Exchange, Stock, Tree } from "../aux/Interfaces"
+import { Bar, Exchange, ExchangeCost, Stock, Tree } from "../aux/Interfaces"
 
 const tables = {
     stocks: '`boa-dashboards.dbt_semantic_layer_personal_finance.stocks`',
-    exchange: '`boa-dashboards.dbt_semantic_layer_personal_finance.exchange`'
+    exchange: '`boa-dashboards.dbt_semantic_layer_personal_finance.exchange`',
+    exchangeCost: '`boa-dashboards.dbt_semantic_layer_personal_finance.exchange_cost`'
 }
 
 const options = {
@@ -63,6 +64,8 @@ const getTreemapData: (() => Promise<Array<Tree>>) = async () =>
 const getExchangeData: (() => Promise<Array<Exchange>>) = async () =>
     getResults(`SELECT * FROM ${tables.exchange}`)
 
+const getExchangeCostData: (() => Promise<Array<ExchangeCost>>) = async () =>
+    getResults(`SELECT * FROM ${tables.exchangeCost}`)
 
 interface GetData {
     totalInvested: number, 
@@ -79,11 +82,26 @@ export const getData: (() => Promise<GetData>) = async () => {
 
         return country !== 'BR' ? value * +filteredExch[0].rate : value
     }
+    const exchangeCost = await getExchangeCostData()
 
     const data = await getStocks()
     const totalInvested = data.reduce((total, d) => total + convertToBrl(+d.total_invested, d.country), 0)
-    const totalBought = data.reduce((total, d) => total + convertToBrl(+d.balance, d.country), 0)
-    const profit = totalInvested - totalBought
+    const totalBought = 
+        data
+            .filter(d => d.country == 'BR')
+            .reduce((total, d) => total + +d.balance, 0)
+        +
+        +exchangeCost[0].cost_brl
+    const profit = 
+        data
+            .filter(d => d.country == 'BR')
+            .reduce((total, d) => total + +d.profit, 0)
+        +
+        data
+            .filter(d => d.country == 'US')
+            .reduce((total, d) => total + convertToBrl(+d.total_invested, d.country), 0)
+        -
+        +exchangeCost[0].cost_brl
     const profitMargin = profit / totalBought
     const fiiData = await getFiis()
     let treemapData = await getTreemapData()

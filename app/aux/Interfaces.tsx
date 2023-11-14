@@ -23,6 +23,12 @@ export interface Exchange {
   rate: string
 }
 
+export interface ExchangeCost {
+  cost_brl: number,
+  cost_int: number,
+  cost_int_avg: number
+}
+
 // CHARTS
 export interface Bar {
   label: string
