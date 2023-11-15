@@ -1,10 +1,11 @@
 import { BigQuery } from '@google-cloud/bigquery'
-import { Bar, Exchange, ExchangeCost, Stock, Tree } from "../aux/Interfaces"
+import { Bar, Dividend, Exchange, ExchangeCost, LinePoint, Stock, Tree } from "../aux/Interfaces"
 
 const tables = {
     stocks: '`boa-dashboards.dbt_semantic_layer_personal_finance.stocks`',
     exchange: '`boa-dashboards.dbt_semantic_layer_personal_finance.exchange`',
-    exchangeCost: '`boa-dashboards.dbt_semantic_layer_personal_finance.exchange_cost`'
+    exchangeCost: '`boa-dashboards.dbt_semantic_layer_personal_finance.exchange_cost`',
+    dividends: '`boa-dashboards.dbt_semantic_layer_personal_finance.dividends`'
 }
 
 const options = {
@@ -67,12 +68,16 @@ const getExchangeData: (() => Promise<Array<Exchange>>) = async () =>
 const getExchangeCostData: (() => Promise<Array<ExchangeCost>>) = async () =>
     getResults(`SELECT * FROM ${tables.exchangeCost}`)
 
+const getDividends: (() => Promise<Array<Dividend>>) = async () =>
+    getResults(`SELECT * FROM ${tables.dividends}`)
+
 interface GetData {
-    totalInvested: number, 
-    profit: number, 
-    profitMargin: number, 
-    fiiData: Array<Bar>,
+    totalInvested: number
+    profit: number
+    profitMargin: number
+    fiiData: Array<Bar>
     treemapData: Array<Tree>
+    dividends: Array<LinePoint>
 }
 
 export const getData: (() => Promise<GetData>) = async () => {
@@ -104,9 +109,7 @@ export const getData: (() => Promise<GetData>) = async () => {
         +exchangeCost[0].cost_brl
     const profitMargin = profit / totalBought
     const fiiData = await getFiis()
-    let treemapData = await getTreemapData()
-
-    treemapData = treemapData
+    const treemapData = (await getTreemapData())
         .map(d => {
             return {
                 ...d,
@@ -115,7 +118,15 @@ export const getData: (() => Promise<GetData>) = async () => {
         })
         .sort((a, b) => b.value - a.value)
 
-    return { totalInvested, profit, profitMargin, fiiData, treemapData }
+    const dividends = (await getDividends())
+        .map(d => {
+            return {
+                month: new Date(d.month.value),
+                value: convertToBrl(+d.amount, d.country)
+            }
+        }) 
+
+    return { totalInvested, profit, profitMargin, fiiData, treemapData, dividends }
 }
 
     

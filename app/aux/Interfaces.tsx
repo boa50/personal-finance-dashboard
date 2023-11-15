@@ -24,9 +24,17 @@ export interface Exchange {
 }
 
 export interface ExchangeCost {
-  cost_brl: number,
-  cost_int: number,
+  cost_brl: number
+  cost_int: number
   cost_int_avg: number
+}
+
+export interface Dividend {
+  ticker: string
+  month: {value: string}
+  amount: number
+  type: string
+  country: string
 }
 
 // CHARTS
@@ -60,3 +68,7 @@ export interface TreeLeaf {
   
 export type Tree = TreeNode | TreeLeaf
 
+export interface LinePoint {
+  month: Date 
+  value: number
+}

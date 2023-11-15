@@ -4,9 +4,10 @@ import { getData } from './data/data'
 import BarChart from './charts/BarChart'
 import Card from './charts/Card'
 import TreemapChart from './charts/TreemapChart'
+import LineChart from './charts/LineChart'
 
 const Home = async() => {
-    const { totalInvested, profit, profitMargin, fiiData, treemapData } = await getData()
+    const { totalInvested, profit, profitMargin, fiiData, treemapData, dividends } = await getData()
 
     return (
         <ConfigProvider theme={theme}>
@@ -30,11 +31,17 @@ const Home = async() => {
                     <TreemapChart
                         title='Test'
                         data={treemapData}
-                        svgDims={{ width: 700, height: 500 }} />
+                        svgDims={{ width: 700, height: 400 }} />
                     <BarChart 
                         title='FIIs' 
                         data={fiiData} 
-                        svgDims={{ width: 700, height: 500 }} />
+                        svgDims={{ width: 700, height: 400 }} />
+                </div>
+                <div className="flex min-w-full flex-row items-stretch p-4">
+                    <LineChart
+                        title='Dividends' 
+                        data={dividends} 
+                        svgDims={{ width: 700, height: 400 }} />
                 </div>
             </main>
         </ConfigProvider>

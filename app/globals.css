@@ -28,8 +28,16 @@ h1 {
 
 .axis-text {
   fill: var(--axis-hex);
-  text-anchor: middle;
+  /* text-anchor: middle; */
   font-size: 10px;
+}
+
+.axis-text.x {
+  text-anchor: middle;
+}
+
+.axis-text.y {
+  text-anchor: end;
 }
 
 .axis-label {
