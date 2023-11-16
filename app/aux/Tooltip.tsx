@@ -1,7 +1,7 @@
 import { InteractionData } from "./Interfaces"
 
 interface TooltipProps {
-    interactionData: InteractionData | null;
+    interactionData: InteractionData | null
     dims: {
         width: number,
         height: number,
@@ -10,9 +10,10 @@ interface TooltipProps {
             top: number,
         }
     }
+    chartType: 'bar' | 'line'
 }
 
-export const Tooltip = ({ interactionData, dims }: TooltipProps) => {
+export const Tooltip = ({ interactionData, dims, chartType }: TooltipProps) => {
     if (!interactionData) {
         return null
     }
@@ -31,7 +32,7 @@ export const Tooltip = ({ interactionData, dims }: TooltipProps) => {
             }}
         >
             <div
-                className={'tooltip'}
+                className={`tooltip ${chartType}`}
                 style={{
                     left: interactionData.xPos,
                     top: interactionData.yPos

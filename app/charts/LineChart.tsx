@@ -1,11 +1,13 @@
 // Based on: https://www.react-graph-gallery.com/line-chart
+'use client'
 
 import * as d3 from 'd3'
-import { useMemo } from 'react'
+import { useMemo, useState } from 'react'
 import { margin } from '../aux/Constants'
-import { LinePoint } from '../aux/Interfaces'
+import { LinePoint, InteractionData } from '../aux/Interfaces'
 import { BRL } from '../aux/Formats'
 import BaseChart from './BaseChart'
+import { Tooltip } from '../aux/Tooltip'
 
 interface ChartProps {
     data: Array<LinePoint>,
@@ -22,6 +24,7 @@ const LineChart = ({ data, svgDims, title }: ChartProps) => {
     margin.left = 86
     const width = svgWidth - margin.left - margin.right
     const height = svgHeight - margin.top - margin.bottom
+    const [interactionData, setInteractiondata] = useState<InteractionData | null>(null)
 
     const x = useMemo(() => {
         return d3
@@ -54,7 +57,7 @@ const LineChart = ({ data, svgDims, title }: ChartProps) => {
         <g key={'mean-line'}>
             <path
                 className='axis-line'
-                stroke-dasharray='4 1'
+                strokeDasharray='4 1'
                 d={`M 0 ${y(meanValue)} H ${width}`}/>
             <text
                 className='axis-text y'
@@ -66,6 +69,28 @@ const LineChart = ({ data, svgDims, title }: ChartProps) => {
             </text>
         </g>
     )
+
+    const tooltips = data.map((d, i) => {
+        return (
+            <g key={i}
+                onMouseEnter={() =>
+                    setInteractiondata({
+                        xPos: x(d.month),
+                        yPos: y(d.value) as number,
+                        label: d.month.toISOString().slice(0, 7),
+                        value: BRL.format(d.value)
+                    })
+                }
+                onMouseLeave={() => setInteractiondata(null)}
+            >
+                <circle
+                    cx={x(d.month)}
+                    cy={y(d.value)}
+                    r={5}
+                    className={'circle primary opacity-0 hover:opacity-100'} />
+            </g>
+        )
+    })
 
     const xAxis = [(
         <path
@@ -132,10 +157,22 @@ const LineChart = ({ data, svgDims, title }: ChartProps) => {
                             d={linePath}
                             className='line primary' />
                         {meanLine}
+                        {tooltips}
                         {xAxis}
                         {yAxis}
                     </g>
                 </svg>
+                <Tooltip 
+                    interactionData={interactionData} 
+                    dims={{ 
+                        width: width, 
+                        height: height, 
+                        margin:{ 
+                            left: margin.left, 
+                            top: margin.top 
+                        } 
+                    }}
+                    chartType='line' />
             </div>
         </BaseChart>
     )

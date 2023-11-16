@@ -63,7 +63,14 @@ h1 {
   font-size: 12px;
   padding: 4px;
   margin-left: 15px;
+}
+
+.tooltip.bar {
   transform: translate(-50%, -25%);
+}
+
+.tooltip.line {
+  transform: translate(10%, -50%);
 }
 
 .tooltip>.label {
@@ -72,7 +79,7 @@ h1 {
 
 .line {
   fill: none;
-  stroke-width: 2;
+  stroke-width: 3;
 }
 
 .line.primary {
@@ -81,4 +88,12 @@ h1 {
 
 .line.divergent {
   stroke: var(--chart-divergent);
+}
+
+.circle.primary {
+  fill: var(--chart-primary);
+}
+
+.circle.divergent {
+  fill: var(--chart-divergent);
 }

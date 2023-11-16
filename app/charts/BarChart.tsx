@@ -170,7 +170,8 @@ const BarChart = ({ data, svgDims, title }: ChartProps) => {
                             left: margin.left, 
                             top: margin.top 
                         } 
-                    }} />
+                    }}
+                    chartType='bar' />
             </div>
         </BaseChart>
     )
