@@ -4,7 +4,7 @@
 import * as d3 from 'd3'
 import { useMemo, useState } from 'react'
 import { Bar, InteractionData } from '../aux/Interfaces'
-import { Tooltip } from '../aux/Tooltip'
+import Tooltip from '../aux/Tooltip'
 import { BRL } from '../aux/Formats'
 import { colourSchemeCategorical, margin, barPadding } from '../aux/Constants'
 import BaseChart from './BaseChart'

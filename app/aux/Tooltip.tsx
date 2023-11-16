@@ -10,10 +10,10 @@ interface TooltipProps {
             top: number,
         }
     }
-    chartType: 'bar' | 'line'
+    chartType?: 'bar' | 'line' | 'default'
 }
 
-export const Tooltip = ({ interactionData, dims, chartType }: TooltipProps) => {
+const Tooltip = ({ interactionData, dims, chartType = 'default' }: TooltipProps) => {
     if (!interactionData) {
         return null
     }
@@ -41,8 +41,10 @@ export const Tooltip = ({ interactionData, dims, chartType }: TooltipProps) => {
                 <div className='label'>
                     {interactionData.label}
                 </div>
-                {interactionData.value}
+                <div dangerouslySetInnerHTML={{ __html: interactionData.value }} />
             </div>
         </div>
     )
 }
+
+export default Tooltip

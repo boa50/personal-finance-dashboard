@@ -1,11 +1,13 @@
 // Based on: https://www.react-graph-gallery.com/treemap
+'use client'
 
 import * as d3 from 'd3'
-import { useMemo } from 'react'
+import { useMemo, useState } from 'react'
 import { margin, colourSchemeSequential } from '../aux/Constants'
 import BaseChart from './BaseChart'
-import { Tree, TreeNode } from '../aux/Interfaces'
-import { BRL } from '../aux/Formats'
+import { Tree, TreeNode, InteractionData } from '../aux/Interfaces'
+import { BRL, Percentage } from '../aux/Formats'
+import Tooltip from '../aux/Tooltip'
 
 interface ChartProps {
     data: Array<Tree>,
@@ -21,6 +23,7 @@ const TreemapChart = ({ data, svgDims, title }: ChartProps) => {
     const svgHeight = svgDims.height
     const width = svgWidth - margin.left - margin.right
     const height = svgHeight - margin.top - margin.bottom
+    const [interactionData, setInteractiondata] = useState<InteractionData | null>(null)
 
     const hierarchy = useMemo(() => {
         const tree: Tree = {
@@ -49,39 +52,43 @@ const TreemapChart = ({ data, svgDims, title }: ChartProps) => {
             .range(colourSchemeSequential.toReversed())
     }, [hierarchy])
 
+    const totalInvested = useMemo(() => {
+        return d3.sum(data, d => d.value)
+    }, [data])
+
     const treemap = root.leaves().map(leaf => {
         return (
-            <g key={`leaf-${leaf.data.label}`}>
+            <g key={`leaf-${leaf.data.label}`}
+                onMouseEnter={() =>
+                    setInteractiondata({
+                        xPos: leaf.x0 + ((leaf.x1 - leaf.x0) / 2),
+                        yPos: leaf.y0 + ((leaf.y1 - leaf.y0) / 2),
+                        label: leaf.data.label,
+                        value: `${Percentage.format(leaf.data.value / totalInvested)} 
+                        </br> ${BRL.format(leaf.data.value)}`
+                    })
+                }
+                onMouseLeave={() => setInteractiondata(null)}
+            >
                 <rect
                     x={leaf.x0}
                     y={leaf.y0}
                     width={leaf.x1 - leaf.x0}
                     height={leaf.y1 - leaf.y0}
-                    stroke="transparent"
+                    stroke='transparent'
                     fill={colour(leaf.data.label) as string}
-                    className={"opacity-80 hover:opacity-100"}
+                    className={'opacity-80 hover:opacity-100'}
                 />
                 <text
-                    x={leaf.x0 + 3}
-                    y={leaf.y0 + 3}
+                    x={leaf.x0 + 10}
+                    y={leaf.y0 + 10}
                     fontSize={12}
-                    textAnchor="start"
-                    alignmentBaseline="hanging"
-                    fill="white"
-                    className="font-bold"
+                    textAnchor='start'
+                    alignmentBaseline='hanging'
+                    fill='white'
+                    className='font-medium'
                 >
                     {leaf.data.label}
-                </text>
-                <text
-                    x={leaf.x0 + 3}
-                    y={leaf.y0 + 18}
-                    fontSize={12}
-                    textAnchor="start"
-                    alignmentBaseline="hanging"
-                    fill="white"
-                    className="font-light"
-                >
-                    {BRL.format(leaf.data.value)}
                 </text>
             </g>
         )
@@ -99,6 +106,16 @@ const TreemapChart = ({ data, svgDims, title }: ChartProps) => {
                         {treemap}
                     </g>
                 </svg>
+                <Tooltip 
+                    interactionData={interactionData} 
+                    dims={{ 
+                        width: width, 
+                        height: height, 
+                        margin:{ 
+                            left: margin.left, 
+                            top: margin.top 
+                        } 
+                    }} />
             </div>
         </BaseChart>
     )

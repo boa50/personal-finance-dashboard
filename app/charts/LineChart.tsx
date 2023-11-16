@@ -7,7 +7,7 @@ import { margin as defaultMargin } from '../aux/Constants'
 import { LinePoint, InteractionData } from '../aux/Interfaces'
 import { BRL } from '../aux/Formats'
 import BaseChart from './BaseChart'
-import { Tooltip } from '../aux/Tooltip'
+import Tooltip from '../aux/Tooltip'
 
 interface ChartProps {
     data: Array<LinePoint>,
