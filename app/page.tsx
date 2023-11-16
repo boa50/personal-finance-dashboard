@@ -31,17 +31,17 @@ const Home = async() => {
                     <TreemapChart
                         title='Investments Distribution'
                         data={treemapData}
-                        svgDims={{ width: 700, height: 350 }} />
+                        svgDims={{ width: 700, height: 400 }} />
                     <BarChart 
                         title='FIIs' 
                         data={fiiData} 
-                        svgDims={{ width: 700, height: 350 }} />
+                        svgDims={{ width: 700, height: 400 }} />
                 </div>
                 <div className="flex min-w-full flex-row items-stretch p-4">
                     <LineChart
                         title='Dividends' 
                         data={dividends} 
-                        svgDims={{ width: 1400, height: 350 }} />
+                        svgDims={{ width: 1400, height: 300 }} />
                 </div>
             </main>
         </ConfigProvider>

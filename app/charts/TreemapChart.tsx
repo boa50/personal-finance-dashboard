@@ -92,7 +92,12 @@ const TreemapChart = ({ data, svgDims, title }: ChartProps) => {
         <BaseChart title={title}>
             <div style={{ position: 'relative' }}>
                 <svg width={svgWidth} height={svgHeight} id={`treemap-${title}`}>
-                    {treemap}
+                    <g 
+                        width={width}
+                        height={height}
+                        transform={`translate(${[margin.left, margin.top].join(',')})`}>
+                        {treemap}
+                    </g>
                 </svg>
             </div>
         </BaseChart>

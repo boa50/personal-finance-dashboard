@@ -3,7 +3,7 @@
 
 import * as d3 from 'd3'
 import { useMemo, useState } from 'react'
-import { margin } from '../aux/Constants'
+import { margin as defaultMargin } from '../aux/Constants'
 import { LinePoint, InteractionData } from '../aux/Interfaces'
 import { BRL } from '../aux/Formats'
 import BaseChart from './BaseChart'
@@ -21,6 +21,7 @@ interface ChartProps {
 const LineChart = ({ data, svgDims, title }: ChartProps) => {
     const svgWidth = svgDims.width
     const svgHeight = svgDims.height
+    const margin = { ...defaultMargin }
     margin.left = 86
     const width = svgWidth - margin.left - margin.right
     const height = svgHeight - margin.top - margin.bottom
