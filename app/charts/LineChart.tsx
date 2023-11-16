@@ -19,7 +19,7 @@ interface ChartProps {
 const LineChart = ({ data, svgDims, title }: ChartProps) => {
     const svgWidth = svgDims.width
     const svgHeight = svgDims.height
-    margin.left = 72
+    margin.left = 86
     const width = svgWidth - margin.left - margin.right
     const height = svgHeight - margin.top - margin.bottom
 
@@ -37,6 +37,35 @@ const LineChart = ({ data, svgDims, title }: ChartProps) => {
             .range([height, 0])
     }, [data, height])
 
+    const linePath = useMemo(() => {
+        const lineBuilder = d3
+            .line<LinePoint>()
+            .x(d => x(d.month))
+            .y(d => y(d.value))
+
+        return lineBuilder(data)
+    }, [data, x, y]) as string
+
+    const meanValue = useMemo(() => {
+        return d3.mean(data, d => d.value)
+    }, [data]) as number
+
+    const meanLine = (
+        <g key={'mean-line'}>
+            <path
+                className='axis-line'
+                stroke-dasharray='4 1'
+                d={`M 0 ${y(meanValue)} H ${width}`}/>
+            <text
+                className='axis-text y'
+                x={width}
+                y={y(meanValue) - 10}
+                alignmentBaseline='central'
+            >
+                {`Average: ${BRL.format(meanValue)}`}
+            </text>
+        </g>
+    )
 
     const xAxis = [(
         <path
@@ -99,6 +128,10 @@ const LineChart = ({ data, svgDims, title }: ChartProps) => {
                         width={width}
                         height={height}
                         transform={`translate(${[margin.left, margin.top].join(',')})`}>
+                        <path
+                            d={linePath}
+                            className='line primary' />
+                        {meanLine}
                         {xAxis}
                         {yAxis}
                     </g>

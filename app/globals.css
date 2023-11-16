@@ -8,7 +8,9 @@
   --background-end-hex: #0f52ba; */
   --background-start-hex: #28282B;
   --background-end-hex: #000000;
-  --axis-hex: #E5E4E2
+  --axis-hex: #E5E4E2;
+  --chart-primary: #4e79a7;
+  --chart-divergent: #f28e2c;
 }
 
 body {
@@ -28,7 +30,6 @@ h1 {
 
 .axis-text {
   fill: var(--axis-hex);
-  /* text-anchor: middle; */
   font-size: 10px;
 }
 
@@ -67,4 +68,17 @@ h1 {
 
 .tooltip>.label {
   font-weight: 700;
+}
+
+.line {
+  fill: none;
+  stroke-width: 2;
+}
+
+.line.primary {
+  stroke: var(--chart-primary);
+}
+
+.line.divergent {
+  stroke: var(--chart-divergent);
 }

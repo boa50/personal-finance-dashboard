@@ -118,13 +118,20 @@ export const getData: (() => Promise<GetData>) = async () => {
         })
         .sort((a, b) => b.value - a.value)
 
-    const dividends = (await getDividends())
-        .map(d => {
-            return {
-                month: new Date(d.month.value),
-                value: convertToBrl(+d.amount, d.country)
+    const dividends: Array<LinePoint> = [];
+    (await getDividends())
+        .reduce((res: any, d: Dividend) => {
+            const month = d.month.value
+            if(!res[month]) {
+                res[month] = { month: new Date(d.month.value), value: 0 }
+                dividends.push(res[month])
             }
-        }) 
+
+            res[month].value += convertToBrl(+d.amount, d.country)
+            return res
+        }, {})
+    dividends.sort((a, b) => a.month.getTime() - b.month.getTime())
+
 
     return { totalInvested, profit, profitMargin, fiiData, treemapData, dividends }
 }

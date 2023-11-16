@@ -11,7 +11,7 @@ const Home = async() => {
 
     return (
         <ConfigProvider theme={theme}>
-            <main className="flex min-h-screen flex-col items-center p-8">
+            <main className="flex min-h-screen flex-col items-center p-8 pb-0">
                 <h1>Financial Dashboard</h1>
                 <div className="flex min-w-full flex-row items-stretch p-4">
                     <Card 
@@ -29,19 +29,19 @@ const Home = async() => {
                 </div>
                 <div className="flex min-w-full flex-row items-stretch p-4">
                     <TreemapChart
-                        title='Test'
+                        title='Investments Distribution'
                         data={treemapData}
-                        svgDims={{ width: 700, height: 400 }} />
+                        svgDims={{ width: 700, height: 350 }} />
                     <BarChart 
                         title='FIIs' 
                         data={fiiData} 
-                        svgDims={{ width: 700, height: 400 }} />
+                        svgDims={{ width: 700, height: 350 }} />
                 </div>
                 <div className="flex min-w-full flex-row items-stretch p-4">
                     <LineChart
                         title='Dividends' 
                         data={dividends} 
-                        svgDims={{ width: 700, height: 400 }} />
+                        svgDims={{ width: 1400, height: 350 }} />
                 </div>
             </main>
         </ConfigProvider>

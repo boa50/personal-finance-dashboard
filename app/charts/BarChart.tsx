@@ -107,10 +107,10 @@ const BarChart = ({ data, svgDims, title }: ChartProps) => {
                     y1={height}
                     y2={height + 5} />
                 <text
-                    className='axis-text'
+                    className='axis-text x'
                     x={x(value)}
                     y={height + margin.bottom - 5}
-                    alignmentBaseline="central"
+                    alignmentBaseline='central'
                 >
                     {value}
                 </text>
