@@ -54,7 +54,7 @@ export interface InteractionData {
 export interface TreeNode {
     type: 'node'
     label: string
-    country: string
+    country?: string
     value: number
     children: Tree[]
 }

@@ -113,7 +113,7 @@ export const getData: (() => Promise<GetData>) = async () => {
         .map(d => {
             return {
                 ...d,
-                value: convertToBrl(+d.value, d.country)
+                value: convertToBrl(+d.value, d.country as string)
             }
         })
         .sort((a, b) => b.value - a.value)
