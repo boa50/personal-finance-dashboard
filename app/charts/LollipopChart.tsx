@@ -4,7 +4,7 @@ import * as d3 from 'd3'
 import { useState, useMemo } from 'react'
 import { Lollipop, InteractionData } from '../aux/Interfaces'
 import { colourSchemeCategorical, margin as defaultMargin, barPadding } from '../aux/Constants'
-import { BRL } from '../aux/Formats'
+import { BRL, Percentage } from '../aux/Formats'
 import BaseChart from './BaseChart'
 import Tooltip from '../aux/Tooltip'
 
@@ -21,7 +21,7 @@ const LollipopChart = ({ data, svgDims, title }: ChartProps) => {
     const svgWidth = svgDims.width
     const svgHeight = svgDims.height
     const margin = { ...defaultMargin }
-    margin.left = 72
+    margin.left = 54
     const width = svgWidth - margin.left - margin.right
     const height = svgHeight - margin.top - margin.bottom
     const [interactionData, setInteractiondata] = useState<InteractionData | null>(null) 
@@ -57,6 +57,8 @@ const LollipopChart = ({ data, svgDims, title }: ChartProps) => {
         if (yPos === undefined) {
             return null
         }
+
+        const isIncrease = d.value > d.valueInit
     
         return (
             <g key={i}
@@ -65,7 +67,7 @@ const LollipopChart = ({ data, svgDims, title }: ChartProps) => {
                         xPos: x(d.value),
                         yPos: y(d.label) as number,
                         label: `${d.label} (${d.category})`,
-                        value: BRL.format(d.value)
+                        value: `${BRL.format(d.value)} </br> ${Percentage.format((d.value - d.valueInit) / d.valueInit)}`
                     })
                 }
                 onMouseLeave={() => setInteractiondata(null)}
@@ -77,15 +79,15 @@ const LollipopChart = ({ data, svgDims, title }: ChartProps) => {
                     y2={y(d.label) as number + y.bandwidth() / 2}
                     opacity={0.9}
                     stroke={colour(d.category) as string}
-                    strokeWidth={3}/>
+                    strokeDasharray={!isIncrease ? '3' : '0'}
+                    strokeWidth={3} />
                 <circle
                     cy={y(d.label) as number + y.bandwidth() / 2}
                     cx={x(d.valueInit)}
                     opacity={0.9}
                     stroke={colour(d.category) as string}
                     strokeWidth={1}
-                    r={5}
-                />
+                    r={5} />
                 <circle
                     cy={y(d.label) as number + y.bandwidth() / 2}
                     cx={x(d.value)}
@@ -93,10 +95,9 @@ const LollipopChart = ({ data, svgDims, title }: ChartProps) => {
                     stroke={colour(d.category) as string}
                     fill={colour(d.category) as string}
                     strokeWidth={1}
-                    r={5}
-                />
+                    r={5} />
                 <text
-                    x={x(d.value > d.valueInit ? d.valueInit : d.value) - 12}
+                    x={x(isIncrease ? d.valueInit : d.value) - 12}
                     y={yPos + y.bandwidth() / 2}
                     className='axis-label lollipop'
                     alignmentBaseline='central'
@@ -187,7 +188,7 @@ const LollipopChart = ({ data, svgDims, title }: ChartProps) => {
                             top: margin.top 
                         } 
                     }}
-                    chartType='bar' />
+                    chartType='line' />
             </div>
         </BaseChart>
     )

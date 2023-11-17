@@ -37,37 +37,7 @@ const getStocks: (() => Promise<Array<Stock>>) = async () =>
         getResults(`SELECT * FROM ${tables.stocks}`) :
         getMockData('stocks')
 
-const getFiis: (() => Promise<Array<Bar>>) = async () => {
-    if (isDb) {
-        const rows = await getResults(
-            `SELECT 
-                ticker, 
-                total_invested, 
-                fii_sector
-            FROM ${tables.stocks} 
-            WHERE type = 'FII'`
-        )
-    
-        return rows.map(d => {
-            return {
-                label: d.ticker, 
-                value: +d.total_invested, 
-                category: d.fii_sector
-            }
-        })
-    } 
-
-    return getMockData('fiis').map(d => {
-        return {
-            label: d.ticker, 
-            value: +d.total_invested, 
-            category: d.fii_sector
-        }
-    })
-}
-
-
-const getFiisL: (() => Promise<Array<Lollipop>>) = async () => {
+const getFiis: (() => Promise<Array<Lollipop>>) = async () => {
     if (isDb) {
         const rows = await getResults(
             `SELECT 
@@ -136,10 +106,9 @@ interface GetData {
     totalInvested: number
     profit: number
     profitMargin: number
-    fiiData: Array<Bar>
+    fiiData: Array<Lollipop>
     treemapData: Array<Tree>
     dividends: Array<LinePoint>
-    fiiDataL: Array<Lollipop>
 }
 
 export const getData: (() => Promise<GetData>) = async () => {
@@ -195,10 +164,7 @@ export const getData: (() => Promise<GetData>) = async () => {
     dividends.sort((a, b) => a.month.getTime() - b.month.getTime())
 
 
-    const fiiDataL = await getFiisL()
-
-
-    return { totalInvested, profit, profitMargin, fiiData, treemapData, dividends, fiiDataL }
+    return { totalInvested, profit, profitMargin, fiiData, treemapData, dividends }
 }
 
     

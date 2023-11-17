@@ -8,7 +8,7 @@ import LineChart from './charts/LineChart'
 import LollipopChart from './charts/LollipopChart'
 
 const Home = async() => {
-    const { totalInvested, profit, profitMargin, fiiData, treemapData, dividends, fiiDataL } = await getData()
+    const { totalInvested, profit, profitMargin, fiiData, treemapData, dividends } = await getData()
 
     return (
         <ConfigProvider theme={theme}>
@@ -33,13 +33,13 @@ const Home = async() => {
                         title='Investments Distribution'
                         data={treemapData}
                         svgDims={{ width: 700, height: 400 }} />
-                    <BarChart 
+                    {/* <BarChart 
                         title='FIIs' 
                         data={fiiData} 
-                        svgDims={{ width: 700, height: 400 }} />
+                        svgDims={{ width: 700, height: 400 }} /> */}
                     <LollipopChart 
                         title='FIIs Lollipop' 
-                        data={fiiDataL} 
+                        data={fiiData} 
                         svgDims={{ width: 700, height: 400 }} />
                 </div>
                 <div className="flex min-w-full flex-row items-stretch p-4">
