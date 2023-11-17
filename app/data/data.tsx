@@ -1,20 +1,27 @@
+import * as d3 from 'd3'
+import * as fs from 'fs'
 import { BigQuery } from '@google-cloud/bigquery'
 import { Bar, Dividend, Exchange, ExchangeCost, LinePoint, Stock, Tree } from "../aux/Interfaces"
 
 const tables = {
-    stocks: '`boa-dashboards.dbt_semantic_layer_personal_finance.stocks`',
-    exchange: '`boa-dashboards.dbt_semantic_layer_personal_finance.exchange`',
-    exchangeCost: '`boa-dashboards.dbt_semantic_layer_personal_finance.exchange_cost`',
-    dividends: '`boa-dashboards.dbt_semantic_layer_personal_finance.dividends`'
+    stocks: '`' + process.env.DB_SCHEMA + '.stocks`',
+    exchange: '`' + process.env.DB_SCHEMA + '.exchange`',
+    exchangeCost: '`' + process.env.DB_SCHEMA + '.exchange_cost`',
+    dividends: '`' + process.env.DB_SCHEMA + '.dividends`'
 }
 
 const options = {
-    keyFilename: 'bigquery-key.json',
-    projectId: 'boa-dashboards',
+    keyFilename: process.env.KEY_FILENAME,
+    projectId: process.env.PROJECT_ID,
     scopes: [
         'https://www.googleapis.com/auth/drive.readonly'
     ]
 }
+
+const isDb = process.env.DATASOURCE == 'db'
+
+const getMockData = (filename: string) =>
+    d3.csvParse(fs.readFileSync(`./app/data/mock/${filename}.csv`, 'utf8')) as unknown as Array<any>
 
 const getResults: ((query: string) => Promise<Array<any>>) = async (query: string) => {
     const bigQuery = new BigQuery(options)
@@ -26,30 +33,44 @@ const getResults: ((query: string) => Promise<Array<any>>) = async (query: strin
 }
 
 const getStocks: (() => Promise<Array<Stock>>) = async () => 
-    getResults(`SELECT * FROM ${tables.stocks}`)
+    isDb ?
+        getResults(`SELECT * FROM ${tables.stocks}`) :
+        getMockData('stocks')
 
 const getFiis: (() => Promise<Array<Bar>>) = async () => {
-    const rows = await getResults(
-        `SELECT 
-            ticker, 
-            total_invested, 
-            fii_sector
-        FROM ${tables.stocks} 
-        WHERE type = 'FII'`
-    )
+    if (isDb) {
+        const rows = await getResults(
+            `SELECT 
+                ticker, 
+                total_invested, 
+                fii_sector
+            FROM ${tables.stocks} 
+            WHERE type = 'FII'`
+        )
+    
+        return rows.map(d => {
+            return {
+                label: d.ticker, 
+                value: +d.total_invested, 
+                category: d.fii_sector
+            }
+        })
+    } 
 
-    return rows.map(d => {
+    return getMockData('fiis').map(d => {
         return {
             label: d.ticker, 
             value: +d.total_invested, 
             category: d.fii_sector
         }
     })
+
 }
 
 const getTreemapData: (() => Promise<Array<Tree>>) = async () => 
-    getResults(
-        `SELECT 
+    isDb ?    
+        getResults(
+            `SELECT 
             'leaf' AS type, 
             CASE
                 WHEN type = 'FII' THEN 'FII'
@@ -60,16 +81,23 @@ const getTreemapData: (() => Promise<Array<Tree>>) = async () =>
             SUM(total_invested) AS value
         FROM ${tables.stocks}
         GROUP BY label, country`
-    )
+        ) :
+        getMockData('treemap')
 
 const getExchangeData: (() => Promise<Array<Exchange>>) = async () =>
-    getResults(`SELECT * FROM ${tables.exchange}`)
+    isDb ?    
+        getResults(`SELECT * FROM ${tables.exchange}`) :
+        getMockData('exchange')
 
 const getExchangeCostData: (() => Promise<Array<ExchangeCost>>) = async () =>
-    getResults(`SELECT * FROM ${tables.exchangeCost}`)
+    isDb ?    
+        getResults(`SELECT * FROM ${tables.exchangeCost}`) :
+        getMockData('exchange_cost')
 
 const getDividends: (() => Promise<Array<Dividend>>) = async () =>
-    getResults(`SELECT * FROM ${tables.dividends}`)
+    isDb ?
+        getResults(`SELECT * FROM ${tables.dividends}`) :
+        getMockData('dividends').map(d => {return { ...d, month: { value: d.month } }})
 
 interface GetData {
     totalInvested: number
@@ -123,7 +151,7 @@ export const getData: (() => Promise<GetData>) = async () => {
         .reduce((res: any, d: Dividend) => {
             const month = d.month.value
             if(!res[month]) {
-                res[month] = { month: new Date(d.month.value), value: 0 }
+                res[month] = { month: new Date(month), value: 0 }
                 dividends.push(res[month])
             }
 

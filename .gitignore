@@ -37,3 +37,6 @@ next-env.d.ts
 
 # keys
 /bigquery-key.json
+
+# mock files
+/app/data/mock/*.csv
