@@ -96,7 +96,8 @@ const getExchangeCostData: (() => Promise<Array<ExchangeCost>>) = async () =>
 
 const getDividends: (() => Promise<Array<Dividend>>) = async () =>
     isDb ?
-        getResults(`SELECT * FROM ${tables.dividends}`) :
+        getResults(`SELECT * FROM ${tables.dividends} d
+            WHERE DATE_DIFF(DATE_TRUNC(CURRENT_DATE(), MONTH), d.month, MONTH) <= 24`) :
         getMockData('dividends').map(d => {return { ...d, month: { value: d.month } }})
 
 interface GetData {

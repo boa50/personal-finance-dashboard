@@ -39,7 +39,7 @@ const Home = async() => {
                 </div>
                 <div className="flex min-w-full flex-row items-stretch p-4">
                     <LineChart
-                        title='Dividends' 
+                        title='Dividends on the Last 2 Years' 
                         data={dividends} 
                         svgDims={{ width: 1400, height: 300 }} />
                 </div>
