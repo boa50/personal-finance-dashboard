@@ -4,8 +4,6 @@
 
 :root {
   --foreground-hex: #FFFFFF;
-  /* --background-start-hex: #1a6ded;
-  --background-end-hex: #0f52ba; */
   --background-start-hex: #28282B;
   --background-end-hex: #000000;
   --axis-hex: #E5E4E2;
@@ -43,9 +41,16 @@ h1 {
 
 .axis-label {
   fill: var(--axis-hex);
-  text-anchor: start;
   font-size: 12px;
   font-weight: 600;
+}
+
+.axis-label.bar {
+  text-anchor: start;
+}
+
+.axis-label.lollipop {
+  text-anchor: end;
 }
 
 .legend {

@@ -38,17 +38,24 @@ export interface Dividend {
 }
 
 // CHARTS
+export interface InteractionData {
+  xPos: number
+  yPos: number
+  label: string
+  value: string
+}
+
 export interface Bar {
   label: string
   value: number 
   category: string
 }
 
-export interface InteractionData {
-    xPos: number
-    yPos: number
-    label: string
-    value: string
+export interface Lollipop {
+  label: string
+  valueInit: number 
+  value: number 
+  category: string
 }
 
 export interface TreeNode {

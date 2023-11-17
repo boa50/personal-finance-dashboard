@@ -1,16 +1,15 @@
-// Base code got from: https://www.react-graph-gallery.com/barplot
 'use client'
 
 import * as d3 from 'd3'
-import { useMemo, useState } from 'react'
-import { Bar, InteractionData } from '../aux/Interfaces'
-import Tooltip from '../aux/Tooltip'
+import { useState, useMemo } from 'react'
+import { Lollipop, InteractionData } from '../aux/Interfaces'
+import { colourSchemeCategorical, margin as defaultMargin, barPadding } from '../aux/Constants'
 import { BRL } from '../aux/Formats'
-import { colourSchemeCategorical, margin, barPadding } from '../aux/Constants'
 import BaseChart from './BaseChart'
+import Tooltip from '../aux/Tooltip'
 
 interface ChartProps {
-    data: Array<Bar>,
+    data: Array<Lollipop>,
     svgDims: {
         width: number,
         height: number
@@ -18,9 +17,11 @@ interface ChartProps {
     title: string
 }
 
-const BarChart = ({ data, svgDims, title }: ChartProps) => {
+const LollipopChart = ({ data, svgDims, title }: ChartProps) => {
     const svgWidth = svgDims.width
     const svgHeight = svgDims.height
+    const margin = { ...defaultMargin }
+    margin.left = 72
     const width = svgWidth - margin.left - margin.right
     const height = svgHeight - margin.top - margin.bottom
     const [interactionData, setInteractiondata] = useState<InteractionData | null>(null) 
@@ -51,7 +52,7 @@ const BarChart = ({ data, svgDims, title }: ChartProps) => {
             .range(colourSchemeCategorical)
     }, [categories])
 
-    const bars = data.map((d, i) => {
+    const lollipops = data.map((d, i) => {
         const yPos = y(d.label)
         if (yPos === undefined) {
             return null
@@ -69,18 +70,35 @@ const BarChart = ({ data, svgDims, title }: ChartProps) => {
                 }
                 onMouseLeave={() => setInteractiondata(null)}
             >
-                <rect
-                    x={x(0)}
-                    y={y(d.label)}
-                    width={x(d.value)}
-                    height={y.bandwidth()}
+                <line 
+                    x1={x(d.valueInit)}
+                    x2={x(d.value)}
+                    y1={y(d.label) as number + y.bandwidth() / 2}
+                    y2={y(d.label) as number + y.bandwidth() / 2}
+                    opacity={0.9}
+                    stroke={colour(d.category) as string}
+                    strokeWidth={3}/>
+                <circle
+                    cy={y(d.label) as number + y.bandwidth() / 2}
+                    cx={x(d.valueInit)}
+                    opacity={0.9}
+                    stroke={colour(d.category) as string}
+                    strokeWidth={1}
+                    r={5}
+                />
+                <circle
+                    cy={y(d.label) as number + y.bandwidth() / 2}
+                    cx={x(d.value)}
+                    opacity={0.9}
+                    stroke={colour(d.category) as string}
                     fill={colour(d.category) as string}
-                    fillOpacity={0.9}
-                    rx={3} />
+                    strokeWidth={1}
+                    r={5}
+                />
                 <text
-                    x={x(0) + 7}
+                    x={x(d.value > d.valueInit ? d.valueInit : d.value) - 12}
                     y={yPos + y.bandwidth() / 2}
-                    className='axis-label bar'
+                    className='axis-label lollipop'
                     alignmentBaseline='central'
                 >
                     {d.label}
@@ -115,7 +133,6 @@ const BarChart = ({ data, svgDims, title }: ChartProps) => {
                 </text>
             </g>
         )))]
-    
 
     const legend = <g className='legend'>
         <rect 
@@ -150,12 +167,12 @@ const BarChart = ({ data, svgDims, title }: ChartProps) => {
     return (
         <BaseChart title={title}>
             <div style={{ position: 'relative' }}>
-                <svg width={svgWidth} height={svgHeight} id={`barchart-${title}`}>
+                <svg width={svgWidth} height={svgHeight} id={`lollipopchart-${title}`}>
                     <g 
                         width={width}
                         height={height}
                         transform={`translate(${[margin.left, margin.top].join(',')})`}>
-                        {bars}
+                        {lollipops}
                         {xAxis}
                         {legend}
                     </g>
@@ -176,4 +193,4 @@ const BarChart = ({ data, svgDims, title }: ChartProps) => {
     )
 }
 
-export default BarChart
+export default LollipopChart
