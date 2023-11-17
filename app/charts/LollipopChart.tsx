@@ -48,7 +48,7 @@ const LollipopChart = ({ data, svgDims, title }: ChartProps) => {
     const colour = useMemo(() => {
         return d3
             .scaleOrdinal()
-            .domain(categories)
+            .domain(categories.sort())
             .range(colourSchemeCategorical)
     }, [categories])
 
@@ -130,7 +130,7 @@ const LollipopChart = ({ data, svgDims, title }: ChartProps) => {
                     y={height + margin.bottom - 5}
                     alignmentBaseline='central'
                 >
-                    {value}
+                    {BRL.format(value, true)}
                 </text>
             </g>
         )))]

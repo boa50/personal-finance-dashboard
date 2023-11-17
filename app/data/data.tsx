@@ -107,6 +107,7 @@ interface GetData {
     profit: number
     profitMargin: number
     fiiData: Array<Lollipop>
+    fiiDataGrouped: Array<Bar>
     treemapData: Array<Tree>
     dividends: Array<LinePoint>
 }
@@ -149,22 +150,26 @@ export const getData: (() => Promise<GetData>) = async () => {
         })
         .sort((a, b) => b.value - a.value)
 
-    const dividends: Array<LinePoint> = [];
-    (await getDividends())
-        .reduce((res: any, d: Dividend) => {
-            const month = d.month.value
-            if(!res[month]) {
-                res[month] = { month: new Date(month), value: 0 }
-                dividends.push(res[month])
+    const dividends = [...d3.group(await getDividends(), d => d.month.value)]
+        .map(d => {
+            return {
+                month: new Date(d[0]),
+                value: d3.sum(d[1], d => d.amount)
             }
+        })
+        .sort((a, b) => a.month.getTime() - b.month.getTime())
 
-            res[month].value += convertToBrl(+d.amount, d.country)
-            return res
-        }, {})
-    dividends.sort((a, b) => a.month.getTime() - b.month.getTime())
+    const fiiDataGrouped = [...d3.group(fiiData, d => d.category)]
+        .map(d => { 
+            return { 
+                label: d[0], 
+                value: d3.sum(d[1], d => d.value),
+                category: d[0]
+            }
+        })
+        .sort((a, b) => b.value - a.value)
 
-
-    return { totalInvested, profit, profitMargin, fiiData, treemapData, dividends }
+    return { totalInvested, profit, profitMargin, fiiData, fiiDataGrouped, treemapData, dividends }
 }
 
     

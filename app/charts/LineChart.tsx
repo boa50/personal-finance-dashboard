@@ -141,7 +141,7 @@ const LineChart = ({ data, svgDims, title }: ChartProps) => {
                     y={y(value)}
                     alignmentBaseline='central'
                 >
-                    {BRL.format(value)}
+                    {BRL.format(value, true)}
                 </text>
             </g>
         )))]

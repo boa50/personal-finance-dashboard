@@ -8,7 +8,7 @@ import LineChart from './charts/LineChart'
 import LollipopChart from './charts/LollipopChart'
 
 const Home = async() => {
-    const { totalInvested, profit, profitMargin, fiiData, treemapData, dividends } = await getData()
+    const { totalInvested, profit, profitMargin, fiiData, fiiDataGrouped, treemapData, dividends } = await getData()
 
     return (
         <ConfigProvider theme={theme}>
@@ -32,11 +32,12 @@ const Home = async() => {
                     <TreemapChart
                         title='Investments Distribution'
                         data={treemapData}
-                        svgDims={{ width: 700, height: 400 }} />
-                    {/* <BarChart 
-                        title='FIIs' 
-                        data={fiiData} 
-                        svgDims={{ width: 700, height: 400 }} /> */}
+                        svgDims={{ width: 500, height: 400 }} />
+                    <BarChart 
+                        title='FIIs Grouped' 
+                        data={fiiDataGrouped}
+                        legend={false}
+                        svgDims={{ width: 400, height: 400 }} />
                     <LollipopChart 
                         title='FIIs Lollipop' 
                         data={fiiData} 

@@ -46,7 +46,7 @@ h1 {
 }
 
 .axis-label.bar {
-  text-anchor: start;
+  text-anchor: end;
 }
 
 .axis-label.lollipop {

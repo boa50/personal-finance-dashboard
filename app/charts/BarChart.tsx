@@ -6,54 +6,59 @@ import { useMemo, useState } from 'react'
 import { Bar, InteractionData } from '../aux/Interfaces'
 import Tooltip from '../aux/Tooltip'
 import { BRL } from '../aux/Formats'
-import { colourSchemeCategorical, margin, barPadding } from '../aux/Constants'
+import { colourSchemeCategorical, margin as defaultMargin, barPadding } from '../aux/Constants'
 import BaseChart from './BaseChart'
 
 interface ChartProps {
-    data: Array<Bar>,
+    data: Array<Bar>
     svgDims: {
         width: number,
         height: number
-    },
+    }
     title: string
+    legend?: boolean
+    axis?: boolean
 }
 
-const BarChart = ({ data, svgDims, title }: ChartProps) => {
+const BarChart = ({ data, svgDims, title, legend = true, axis = true }: ChartProps) => {
     const svgWidth = svgDims.width
     const svgHeight = svgDims.height
+    const margin = { ...defaultMargin }
+    margin.bottom = 64
+    margin.left = 72
     const width = svgWidth - margin.left - margin.right
     const height = svgHeight - margin.top - margin.bottom
     const [interactionData, setInteractiondata] = useState<InteractionData | null>(null) 
 
-    const x = useMemo(() => {
+    const y = useMemo(() => {
         return d3
             .scaleLinear()
-            .domain([0, d3.max(data, d => (d.value)) as number])
-            .range([0, width])
-    }, [data, width])
+            .domain([0, (d3.max(data, d => (d.value)) as number) * 1.05])
+            .range([height, 0])
+    }, [data, height])
 
-    const y = useMemo(() => {
+    const x = useMemo(() => {
         const labels = [...new Set(data.sort((a, b) => b.value - a.value).map(d => d.label))]
 
         return d3
             .scaleBand()
             .domain(labels)
-            .range([0, height])
+            .range([0, width])
             .padding(barPadding)
-    }, [data, height])
+    }, [data, width])
 
     const categories = useMemo(() => {return [...new Set(data.map(d => d.category))]}, [data]) 
 
     const colour = useMemo(() => {
         return d3
             .scaleOrdinal()
-            .domain(categories)
+            .domain(categories.sort())
             .range(colourSchemeCategorical)
     }, [categories])
 
     const bars = data.map((d, i) => {
-        const yPos = y(d.label)
-        if (yPos === undefined) {
+        const xPos = x(d.label)
+        if (xPos === undefined) {
             return null
         }
     
@@ -61,27 +66,28 @@ const BarChart = ({ data, svgDims, title }: ChartProps) => {
             <g key={i}
                 onMouseEnter={() =>
                     setInteractiondata({
-                        xPos: x(d.value),
-                        yPos: y(d.label) as number,
-                        label: `${d.label} (${d.category})`,
+                        xPos: x(d.label) as number,
+                        yPos: y(d.value),
+                        label: d.label,
                         value: BRL.format(d.value)
                     })
                 }
                 onMouseLeave={() => setInteractiondata(null)}
             >
                 <rect
-                    x={x(0)}
-                    y={y(d.label)}
-                    width={x(d.value)}
-                    height={y.bandwidth()}
+                    x={x(d.label)}
+                    y={y(d.value)}
+                    width={x.bandwidth()}
+                    height={y(0) - y(d.value)}
                     fill={colour(d.category) as string}
                     fillOpacity={0.9}
                     rx={3} />
                 <text
-                    x={x(0) + 7}
-                    y={yPos + y.bandwidth() / 2}
+                    x={xPos}
+                    y={y(0) + 7}
                     className='axis-label bar'
                     alignmentBaseline='central'
+                    transform={`rotate(-25 ${xPos + 7} ${y(0) - x.bandwidth()})`}
                 >
                     {d.label}
                 </text>
@@ -89,35 +95,35 @@ const BarChart = ({ data, svgDims, title }: ChartProps) => {
         )
     })
 
-    const xAxis = [(
+    const yAxis = [(
         <path
             className='axis-line'
             key={'x-axis-line'}
-            d={`M 0 ${height} H ${width}`}/>
-    ),(x
+            d={`M 0 0 V ${height}`}/>
+    ),(y
         .ticks(7)
         .slice(1)
         .map((value, i) => (
             <g key={i} >
                 <line
                     className='axis-line'
-                    x1={x(value)}
-                    x2={x(value)}
-                    y1={height}
-                    y2={height + 5} />
+                    x1={0}
+                    x2={-5} 
+                    y1={y(value)}
+                    y2={y(value)} />
                 <text
                     className='axis-text x'
-                    x={x(value)}
-                    y={height + margin.bottom - 5}
+                    x={-30}
+                    y={y(value)}
                     alignmentBaseline='central'
                 >
-                    {value}
+                    {BRL.format(value, true)}
                 </text>
             </g>
         )))]
     
 
-    const legend = <g className='legend'>
+    const legendGroup = <g className='legend'>
         <rect 
             fill='white' 
             x={width - 155}
@@ -156,8 +162,8 @@ const BarChart = ({ data, svgDims, title }: ChartProps) => {
                         height={height}
                         transform={`translate(${[margin.left, margin.top].join(',')})`}>
                         {bars}
-                        {xAxis}
-                        {legend}
+                        {axis ? yAxis : null}
+                        {legend ? legendGroup : null}
                     </g>
                 </svg>
                 <Tooltip 
