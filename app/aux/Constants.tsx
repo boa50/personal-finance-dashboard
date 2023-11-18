@@ -1,9 +1,10 @@
 import * as d3 from 'd3'
+import { Margin } from './Interfaces'
 
 export const colourSchemeCategorical = d3.schemeTableau10
 export const colourSchemeSequential = d3.schemeBlues[9]
 
-export const margin = {
+export const margin: Margin = {
     left: 16,
     right: 16,
     top: 16,

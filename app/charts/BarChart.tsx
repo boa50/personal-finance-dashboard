@@ -3,30 +3,26 @@
 
 import * as d3 from 'd3'
 import { useMemo, useState } from 'react'
-import { Bar, InteractionData } from '../aux/Interfaces'
+import { Bar, InteractionData, SvgDims } from '../aux/Interfaces'
 import { BRL } from '../aux/Formats'
 import { colourSchemeCategorical, margin as defaultMargin, barPadding } from '../aux/Constants'
+import { getDims } from '../aux/Utils'
 import BaseChart from './components/BaseChart'
+import Axis from './components/Axis'
 
 interface ChartProps {
     data: Array<Bar>
-    svgDims: {
-        width: number,
-        height: number
-    }
+    svgDims: SvgDims
     title: string
     legend?: boolean
     axis?: boolean
 }
 
 const BarChart = ({ data, svgDims, title, legend = true, axis = true }: ChartProps) => {
-    const svgWidth = svgDims.width
-    const svgHeight = svgDims.height
     const margin = { ...defaultMargin }
     margin.bottom = 64
     margin.left = 72
-    const width = svgWidth - margin.left - margin.right
-    const height = svgHeight - margin.top - margin.bottom
+    const { width, height } = getDims({ svgDims, margin })
     const [interactionData, setInteractiondata] = useState<InteractionData | null>(null) 
 
     const y = useMemo(() => {
@@ -94,34 +90,6 @@ const BarChart = ({ data, svgDims, title, legend = true, axis = true }: ChartPro
         )
     })
 
-    const yAxis = [(
-        <path
-            className='axis-line'
-            key={'x-axis-line'}
-            d={`M 0 0 V ${height}`}/>
-    ),(y
-        .ticks(7)
-        .slice(1)
-        .map((value, i) => (
-            <g key={i} >
-                <line
-                    className='axis-line'
-                    x1={0}
-                    x2={-5} 
-                    y1={y(value)}
-                    y2={y(value)} />
-                <text
-                    className='axis-text x'
-                    x={-30}
-                    y={y(value)}
-                    alignmentBaseline='central'
-                >
-                    {BRL.format(value, true)}
-                </text>
-            </g>
-        )))]
-    
-
     const legendGroup = <g className='legend'>
         <rect 
             fill='white' 
@@ -155,15 +123,21 @@ const BarChart = ({ data, svgDims, title, legend = true, axis = true }: ChartPro
     return (
         <BaseChart 
             title={title}
-            svgWidth={svgWidth}
-            svgHeight={svgHeight}
+            svgDims={svgDims}
             width={width}
             height={height}
             margin={margin}
             interactionData={interactionData}
         >
             {bars}
-            {axis ? yAxis : null}
+            {axis ? 
+                <Axis
+                    width={width}
+                    height={height}
+                    margin={margin}
+                    y={y}
+                    yFormatter={(value: number) => BRL.format(value, true)} /> 
+                : null}
             {legend ? legendGroup : null}
         </BaseChart>
     )

@@ -43,6 +43,18 @@ export interface Crypto {
   quantity: number
 }
 
+export interface Margin {
+  left: number
+  right: number
+  top: number
+  bottom: number
+}
+
+export interface SvgDims {
+  width: number
+  height: number
+}
+
 // CHARTS
 export interface InteractionData {
   xPos: number

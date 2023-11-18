@@ -5,23 +5,18 @@ import * as d3 from 'd3'
 import { useMemo, useState } from 'react'
 import { margin, colourSchemeSequential } from '../aux/Constants'
 import BaseChart from './components/BaseChart'
-import { Tree, TreeNode, InteractionData } from '../aux/Interfaces'
+import { Tree, TreeNode, InteractionData, SvgDims } from '../aux/Interfaces'
 import { BRL, Percentage } from '../aux/Formats'
+import { getDims } from '../aux/Utils'
 
 interface ChartProps {
-    data: Array<Tree>,
-    svgDims: {
-        width: number,
-        height: number
-    },
+    data: Array<Tree>
+    svgDims: SvgDims
     title: string
 }
 
 const TreemapChart = ({ data, svgDims, title }: ChartProps) => {
-    const svgWidth = svgDims.width
-    const svgHeight = svgDims.height
-    const width = svgWidth - margin.left - margin.right
-    const height = svgHeight - margin.top - margin.bottom
+    const { width, height } = getDims({ svgDims, margin })
     const [interactionData, setInteractiondata] = useState<InteractionData | null>(null)
 
     const hierarchy = useMemo(() => {
@@ -97,8 +92,7 @@ const TreemapChart = ({ data, svgDims, title }: ChartProps) => {
     return (
         <BaseChart 
             title={title}
-            svgWidth={svgWidth}
-            svgHeight={svgHeight}
+            svgDims={svgDims}
             width={width}
             height={height}
             margin={margin}

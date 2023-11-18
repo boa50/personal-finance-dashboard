@@ -1,26 +1,22 @@
 import Tooltip from "@/app/aux/Tooltip"
-import { InteractionData } from "@/app/aux/Interfaces"
+import { InteractionData, Margin, SvgDims } from "@/app/aux/Interfaces"
 
 interface Props {
     title: string
     children: React.ReactNode
     interactionData: InteractionData | null,
-    svgWidth: number
-    svgHeight: number
+    svgDims: SvgDims
     width: number
     height: number
-    margin: {
-        left: number
-        top: number
-    }
+    margin: Margin
 }
 
-const BaseChart = ({ title, interactionData, svgWidth, svgHeight, width, height, margin, children }: Props) => {
+const BaseChart = ({ title, interactionData, svgDims, width, height, margin, children }: Props) => {
     return (
         <div>
             <h2 className='font-semibold ml-4'>{title}</h2>
             <div style={{ position: 'relative' }}>
-                <svg width={svgWidth} height={svgHeight} id={`barchart-${title}`}>
+                <svg width={svgDims.width} height={svgDims.height} id={`barchart-${title}`}>
                     <g 
                         width={width}
                         height={height}

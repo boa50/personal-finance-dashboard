@@ -4,26 +4,22 @@
 import * as d3 from 'd3'
 import { useMemo, useState } from 'react'
 import { margin as defaultMargin } from '../aux/Constants'
-import { LinePoint, InteractionData } from '../aux/Interfaces'
+import { LinePoint, InteractionData, SvgDims } from '../aux/Interfaces'
 import { BRL } from '../aux/Formats'
+import { getDims } from '../aux/Utils'
 import BaseChart from './components/BaseChart'
+import Axis from './components/Axis'
 
 interface ChartProps {
-    data: Array<LinePoint>,
-    svgDims: {
-        width: number,
-        height: number
-    },
+    data: Array<LinePoint>
+    svgDims: SvgDims
     title: string
 }
 
 const LineChart = ({ data, svgDims, title }: ChartProps) => {
-    const svgWidth = svgDims.width
-    const svgHeight = svgDims.height
     const margin = { ...defaultMargin }
     margin.left = 86
-    const width = svgWidth - margin.left - margin.right
-    const height = svgHeight - margin.top - margin.bottom
+    const { width, height } = getDims({ svgDims, margin })
     const [interactionData, setInteractiondata] = useState<InteractionData | null>(null)
 
     const x = useMemo(() => {
@@ -92,64 +88,10 @@ const LineChart = ({ data, svgDims, title }: ChartProps) => {
         )
     })
 
-    const xAxis = [(
-        <path
-            className='axis-line'
-            key={'x-axis-line'}
-            d={`M 0 ${height} H ${width}`}/>
-    ),(x
-        .ticks(8)
-        .map((value, i) => (
-            <g key={i} >
-                <line
-                    className='axis-line'
-                    x1={x(value)}
-                    x2={x(value)}
-                    y1={height}
-                    y2={height + 5} />
-                <text
-                    className='axis-text x'
-                    x={x(value)}
-                    y={height + margin.bottom - 5}
-                    alignmentBaseline='central'
-                >
-                    {value.toISOString().slice(0, 7)}
-                </text>
-            </g>
-        )))]
-
-    const yAxis = [(
-        <path
-            className='axis-line'
-            key={'y-axis-line'}
-            d={`M 0 0 V ${height}`}/>
-    ),(y
-        .ticks(8)
-        .slice(1)
-        .map((value, i) => (
-            <g key={i} >
-                <line
-                    className='axis-line'
-                    x1={-5}
-                    x2={0}
-                    y1={y(value)}
-                    y2={y(value)} />
-                <text
-                    className='axis-text y'
-                    x={-10}
-                    y={y(value)}
-                    alignmentBaseline='central'
-                >
-                    {BRL.format(value, true)}
-                </text>
-            </g>
-        )))]
-
     return (
         <BaseChart 
             title={title}
-            svgWidth={svgWidth}
-            svgHeight={svgHeight}
+            svgDims={svgDims}
             width={width}
             height={height}
             margin={margin}
@@ -160,8 +102,15 @@ const LineChart = ({ data, svgDims, title }: ChartProps) => {
                 className='line primary' />
             {meanLine}
             {tooltips}
-            {xAxis}
-            {yAxis}
+            <Axis 
+                x={x}
+                y={y}
+                width={width}
+                height={height}
+                margin={margin}
+                xFormatter={(value: Date) => value.toISOString().slice(0, 7)}
+                yFormatter={(value: number) => BRL.format(value, true)}
+                xTicksShow0={true} />
         </BaseChart>
     )
 }

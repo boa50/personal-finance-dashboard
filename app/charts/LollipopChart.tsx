@@ -2,27 +2,23 @@
 
 import * as d3 from 'd3'
 import { useState, useMemo } from 'react'
-import { Lollipop, InteractionData } from '../aux/Interfaces'
+import { Lollipop, InteractionData, SvgDims } from '../aux/Interfaces'
 import { colourSchemeCategorical, margin as defaultMargin, barPadding } from '../aux/Constants'
 import { BRL, Percentage } from '../aux/Formats'
+import { getDims } from '../aux/Utils'
 import BaseChart from './components/BaseChart'
+import Axis from './components/Axis'
 
 interface ChartProps {
-    data: Array<Lollipop>,
-    svgDims: {
-        width: number,
-        height: number
-    },
+    data: Array<Lollipop>
+    svgDims: SvgDims
     title: string
 }
 
 const LollipopChart = ({ data, svgDims, title }: ChartProps) => {
-    const svgWidth = svgDims.width
-    const svgHeight = svgDims.height
     const margin = { ...defaultMargin }
     margin.left = 54
-    const width = svgWidth - margin.left - margin.right
-    const height = svgHeight - margin.top - margin.bottom
+    const { width, height } = getDims({ svgDims, margin })
     const [interactionData, setInteractiondata] = useState<InteractionData | null>(null) 
 
     const x = useMemo(() => {
@@ -56,7 +52,6 @@ const LollipopChart = ({ data, svgDims, title }: ChartProps) => {
         if (yPos === undefined) {
             return null
         }
-
         const isIncrease = d.value > d.valueInit
     
         return (
@@ -106,33 +101,6 @@ const LollipopChart = ({ data, svgDims, title }: ChartProps) => {
             </g>
         )
     })
-
-    const xAxis = [(
-        <path
-            className='axis-line'
-            key={'x-axis-line'}
-            d={`M 0 ${height} H ${width}`}/>
-    ),(x
-        .ticks(7)
-        .slice(1)
-        .map((value, i) => (
-            <g key={i} >
-                <line
-                    className='axis-line'
-                    x1={x(value)}
-                    x2={x(value)}
-                    y1={height}
-                    y2={height + 5} />
-                <text
-                    className='axis-text x'
-                    x={x(value)}
-                    y={height + margin.bottom - 5}
-                    alignmentBaseline='central'
-                >
-                    {BRL.format(value, true)}
-                </text>
-            </g>
-        )))]
 
     const legend = <g className='legend'>
         <rect 
@@ -207,15 +175,19 @@ const LollipopChart = ({ data, svgDims, title }: ChartProps) => {
     return (
         <BaseChart 
             title={title}
-            svgWidth={svgWidth}
-            svgHeight={svgHeight}
+            svgDims={svgDims}
             width={width}
             height={height}
             margin={margin}
             interactionData={interactionData}
         >
             {lollipops}
-            {xAxis}
+            <Axis
+                width={width}
+                height={height}
+                margin={margin} 
+                x={x}
+                xFormatter={(value: number) => BRL.format(value, true)} />
             {legend}
         </BaseChart>
     )
