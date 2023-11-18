@@ -139,12 +139,52 @@ const LollipopChart = ({ data, svgDims, title }: ChartProps) => {
         <rect 
             fill='white' 
             x={width - 155}
-            y={height - 150}
+            y={height - 196}
             width={Math.max(...(categories.map(d => d.length))) * 8 + 15}
-            height={categories.length * 22}
+            height={categories.length * 22 + 46}
             fillOpacity={0.15}
         />
-        {categories.map((d, i) => (
+        {[(<g key={`legend-${-2}`}>
+            <line 
+                x1={width - 147}
+                x2={width - 134}
+                y1={height - 184}
+                y2={height - 184}
+                className='opacity-90 stroke-stone-200 stroke-[3px]'
+            />
+            <text
+                x={width - 130}
+                y={height - 180}
+            >
+                {'Increase'}
+            </text>
+        </g>),
+        (<g key={`legend-${-1}`}>
+            <line 
+                x1={width - 147}
+                x2={width - 134}
+                y1={height - 164}
+                y2={height - 164}
+                className='opacity-90 stroke-stone-200 stroke-[3px]'
+                strokeDasharray={'3'}
+            />
+            <text
+                x={width - 130}
+                y={height - 160}
+            >
+                {'Decrease'}
+            </text>
+        </g>),
+        (<g key={`legend-divider`}>
+            <line 
+                x1={width - 155}
+                x2={width - 155 + Math.max(...(categories.map(d => d.length))) * 8 + 15}
+                y1={height - 150}
+                y2={height - 150}
+                className='opacity-50 stroke-gray-50 stroke-1'
+                strokeDasharray={'5'} />
+        </g>),
+        (categories.map((d, i) => (
             <g key={`legend-${i}`}>
                 <rect
                     x={width - 147}
@@ -162,7 +202,7 @@ const LollipopChart = ({ data, svgDims, title }: ChartProps) => {
                     {d}
                 </text>
             </g>
-        ))}
+        )))]}
     </g>
 
     return (
