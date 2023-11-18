@@ -4,10 +4,9 @@
 import * as d3 from 'd3'
 import { useMemo, useState } from 'react'
 import { margin, colourSchemeSequential } from '../aux/Constants'
-import BaseChart from './BaseChart'
+import BaseChart from './components/BaseChart'
 import { Tree, TreeNode, InteractionData } from '../aux/Interfaces'
 import { BRL, Percentage } from '../aux/Formats'
-import Tooltip from '../aux/Tooltip'
 
 interface ChartProps {
     data: Array<Tree>,
@@ -96,27 +95,16 @@ const TreemapChart = ({ data, svgDims, title }: ChartProps) => {
     
 
     return (
-        <BaseChart title={title}>
-            <div style={{ position: 'relative' }}>
-                <svg width={svgWidth} height={svgHeight} id={`treemap-${title}`}>
-                    <g 
-                        width={width}
-                        height={height}
-                        transform={`translate(${[margin.left, margin.top].join(',')})`}>
-                        {treemap}
-                    </g>
-                </svg>
-                <Tooltip 
-                    interactionData={interactionData} 
-                    dims={{ 
-                        width: width, 
-                        height: height, 
-                        margin:{ 
-                            left: margin.left, 
-                            top: margin.top 
-                        } 
-                    }} />
-            </div>
+        <BaseChart 
+            title={title}
+            svgWidth={svgWidth}
+            svgHeight={svgHeight}
+            width={width}
+            height={height}
+            margin={margin}
+            interactionData={interactionData}
+        >
+            {treemap}
         </BaseChart>
     )
 }

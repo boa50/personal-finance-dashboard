@@ -6,8 +6,7 @@ import { useMemo, useState } from 'react'
 import { margin as defaultMargin } from '../aux/Constants'
 import { LinePoint, InteractionData } from '../aux/Interfaces'
 import { BRL } from '../aux/Formats'
-import BaseChart from './BaseChart'
-import Tooltip from '../aux/Tooltip'
+import BaseChart from './components/BaseChart'
 
 interface ChartProps {
     data: Array<LinePoint>,
@@ -63,7 +62,7 @@ const LineChart = ({ data, svgDims, title }: ChartProps) => {
             <text
                 className='axis-text y'
                 x={width}
-                y={y(meanValue) - 10}
+                y={y(meanValue) + 10}
                 alignmentBaseline='central'
             >
                 {`Average: ${BRL.format(meanValue)}`}
@@ -147,34 +146,22 @@ const LineChart = ({ data, svgDims, title }: ChartProps) => {
         )))]
 
     return (
-        <BaseChart title={title}>
-            <div style={{ position: 'relative' }}>
-                <svg width={svgWidth} height={svgHeight} id={`barchart-${title}`}>
-                    <g 
-                        width={width}
-                        height={height}
-                        transform={`translate(${[margin.left, margin.top].join(',')})`}>
-                        <path
-                            d={linePath}
-                            className='line primary' />
-                        {meanLine}
-                        {tooltips}
-                        {xAxis}
-                        {yAxis}
-                    </g>
-                </svg>
-                <Tooltip 
-                    interactionData={interactionData} 
-                    dims={{ 
-                        width: width, 
-                        height: height, 
-                        margin:{ 
-                            left: margin.left, 
-                            top: margin.top 
-                        } 
-                    }}
-                    chartType='line' />
-            </div>
+        <BaseChart 
+            title={title}
+            svgWidth={svgWidth}
+            svgHeight={svgHeight}
+            width={width}
+            height={height}
+            margin={margin}
+            interactionData={interactionData}
+        >
+            <path
+                d={linePath}
+                className='line primary' />
+            {meanLine}
+            {tooltips}
+            {xAxis}
+            {yAxis}
         </BaseChart>
     )
 }

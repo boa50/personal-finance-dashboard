@@ -5,8 +5,7 @@ import { useState, useMemo } from 'react'
 import { Lollipop, InteractionData } from '../aux/Interfaces'
 import { colourSchemeCategorical, margin as defaultMargin, barPadding } from '../aux/Constants'
 import { BRL, Percentage } from '../aux/Formats'
-import BaseChart from './BaseChart'
-import Tooltip from '../aux/Tooltip'
+import BaseChart from './components/BaseChart'
 
 interface ChartProps {
     data: Array<Lollipop>,
@@ -206,30 +205,18 @@ const LollipopChart = ({ data, svgDims, title }: ChartProps) => {
     </g>
 
     return (
-        <BaseChart title={title}>
-            <div style={{ position: 'relative' }}>
-                <svg width={svgWidth} height={svgHeight} id={`lollipopchart-${title}`}>
-                    <g 
-                        width={width}
-                        height={height}
-                        transform={`translate(${[margin.left, margin.top].join(',')})`}>
-                        {lollipops}
-                        {xAxis}
-                        {legend}
-                    </g>
-                </svg>
-                <Tooltip 
-                    interactionData={interactionData} 
-                    dims={{ 
-                        width: width, 
-                        height: height, 
-                        margin:{ 
-                            left: margin.left, 
-                            top: margin.top 
-                        } 
-                    }}
-                    chartType='line' />
-            </div>
+        <BaseChart 
+            title={title}
+            svgWidth={svgWidth}
+            svgHeight={svgHeight}
+            width={width}
+            height={height}
+            margin={margin}
+            interactionData={interactionData}
+        >
+            {lollipops}
+            {xAxis}
+            {legend}
         </BaseChart>
     )
 }

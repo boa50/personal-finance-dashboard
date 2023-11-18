@@ -4,10 +4,9 @@
 import * as d3 from 'd3'
 import { useMemo, useState } from 'react'
 import { Bar, InteractionData } from '../aux/Interfaces'
-import Tooltip from '../aux/Tooltip'
 import { BRL } from '../aux/Formats'
 import { colourSchemeCategorical, margin as defaultMargin, barPadding } from '../aux/Constants'
-import BaseChart from './BaseChart'
+import BaseChart from './components/BaseChart'
 
 interface ChartProps {
     data: Array<Bar>
@@ -154,30 +153,18 @@ const BarChart = ({ data, svgDims, title, legend = true, axis = true }: ChartPro
     </g>
 
     return (
-        <BaseChart title={title}>
-            <div style={{ position: 'relative' }}>
-                <svg width={svgWidth} height={svgHeight} id={`barchart-${title}`}>
-                    <g 
-                        width={width}
-                        height={height}
-                        transform={`translate(${[margin.left, margin.top].join(',')})`}>
-                        {bars}
-                        {axis ? yAxis : null}
-                        {legend ? legendGroup : null}
-                    </g>
-                </svg>
-                <Tooltip 
-                    interactionData={interactionData} 
-                    dims={{ 
-                        width: width, 
-                        height: height, 
-                        margin:{ 
-                            left: margin.left, 
-                            top: margin.top 
-                        } 
-                    }}
-                    chartType='bar' />
-            </div>
+        <BaseChart 
+            title={title}
+            svgWidth={svgWidth}
+            svgHeight={svgHeight}
+            width={width}
+            height={height}
+            margin={margin}
+            interactionData={interactionData}
+        >
+            {bars}
+            {axis ? yAxis : null}
+            {legend ? legendGroup : null}
         </BaseChart>
     )
 }
