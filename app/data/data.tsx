@@ -1,13 +1,14 @@
 import * as d3 from 'd3'
 import * as fs from 'fs'
 import { BigQuery } from '@google-cloud/bigquery'
-import { Bar, Dividend, Exchange, ExchangeCost, LinePoint, Lollipop, Stock, Tree } from "../aux/Interfaces"
+import { Bar, Dividend, Exchange, ExchangeCost, LinePoint, Lollipop, Stock, Tree, Crypto } from "../aux/Interfaces"
 
 const tables = {
     stocks: '`' + process.env.DB_SCHEMA + '.stocks`',
     exchange: '`' + process.env.DB_SCHEMA + '.exchange`',
     exchangeCost: '`' + process.env.DB_SCHEMA + '.exchange_cost`',
-    dividends: '`' + process.env.DB_SCHEMA + '.dividends`'
+    dividends: '`' + process.env.DB_SCHEMA + '.dividends`',
+    crypto: '`' + process.env.DB_SCHEMA + '.crypto`'
 }
 
 const options = {
@@ -72,17 +73,35 @@ const getFiis: (() => Promise<Array<Lollipop>>) = async () => {
 const getTreemapData: (() => Promise<Array<Tree>>) = async () => 
     isDb ?    
         getResults(
+        //     `SELECT 
+        //     'leaf' AS type, 
+        //     CASE
+        //         WHEN type = 'FII' THEN 'FII'
+        //         WHEN country = 'BR' THEN 'Stocks BR'
+        //     ELSE 'Stocks Int'
+        //     END AS label,
+        //     country,
+        //     SUM(total_invested) AS value
+        // FROM ${tables.stocks}
+        // GROUP BY label, country`
             `SELECT 
-            'leaf' AS type, 
-            CASE
-                WHEN type = 'FII' THEN 'FII'
-                WHEN country = 'BR' THEN 'Stocks BR'
-            ELSE 'Stocks Int'
-            END AS label,
-            country,
-            SUM(total_invested) AS value
-        FROM ${tables.stocks}
-        GROUP BY label, country`
+                'leaf' AS type, 
+                CASE
+                    WHEN type = 'FII' THEN 'FII'
+                    WHEN country = 'BR' THEN 'Stocks BR'
+                ELSE 'Stocks Int'
+                END AS label,
+                country,
+                SUM(total_invested) AS value
+            FROM ${tables.stocks}
+            GROUP BY label, country
+            UNION ALL
+            SELECT 
+                'leaf' AS type,
+                coin AS label,
+                coin AS country,
+                quantity AS value 
+            FROM ${tables.crypto}`
         ) :
         getMockData('treemap')
 
@@ -101,6 +120,11 @@ const getDividends: (() => Promise<Array<Dividend>>) = async () =>
         getResults(`SELECT * FROM ${tables.dividends} d
             WHERE DATE_DIFF(DATE_TRUNC(CURRENT_DATE(), MONTH), d.month, MONTH) <= 24`) :
         getMockData('dividends').map(d => {return { ...d, month: { value: d.month } }})
+
+const getCrypto: (() => Promise<Array<Crypto>>) = async () =>
+    isDb ?    
+        getResults(`SELECT * FROM ${tables.crypto}`) :
+        getMockData('crypto')
 
 interface GetData {
     totalInvested: number
@@ -121,25 +145,8 @@ export const getData: (() => Promise<GetData>) = async () => {
     }
     const exchangeCost = await getExchangeCostData()
 
-    const data = await getStocks()
-    const totalInvested = data.reduce((total, d) => total + convertToBrl(+d.total_invested, d.country), 0)
-    const totalBought = 
-        data
-            .filter(d => d.country == 'BR')
-            .reduce((total, d) => total + +d.balance, 0)
-        +
-        +exchangeCost[0].cost_brl
-    const profit = 
-        data
-            .filter(d => d.country == 'BR')
-            .reduce((total, d) => total + +d.profit, 0)
-        +
-        data
-            .filter(d => d.country == 'US')
-            .reduce((total, d) => total + convertToBrl(+d.total_invested, d.country), 0)
-        -
-        +exchangeCost[0].cost_brl
-    const profitMargin = profit / totalBought
+    const stocks = await getStocks()
+    const crypto = await getCrypto()
     const fiiData = await getFiis()
     const treemapData = (await getTreemapData())
         .map(d => {
@@ -154,7 +161,7 @@ export const getData: (() => Promise<GetData>) = async () => {
         .map(d => {
             return {
                 month: new Date(d[0]),
-                value: d3.sum(d[1], d => d.amount)
+                value: d3.sum(d[1], d => convertToBrl(+d.amount, d.country))
             }
         })
         .sort((a, b) => a.month.getTime() - b.month.getTime())
@@ -168,6 +175,32 @@ export const getData: (() => Promise<GetData>) = async () => {
             }
         })
         .sort((a, b) => b.value - a.value)
+
+    const totalInvested = 
+        stocks.reduce((total, d) => total + convertToBrl(+d.total_invested, d.country), 0)
+        +
+        crypto.reduce((total, d) => total + convertToBrl(+d.quantity, d.coin), 0)
+    const totalBought = 
+        stocks
+            .filter(d => d.country == 'BR')
+            .reduce((total, d) => total + +d.balance, 0)
+        +
+        +exchangeCost[0].cost_brl
+        +
+        crypto.reduce((total, d) => total + +d.cost, 0)
+    const profit = 
+        stocks
+            .filter(d => d.country == 'BR')
+            .reduce((total, d) => total + +d.profit, 0)
+        +
+        stocks
+            .filter(d => d.country == 'US')
+            .reduce((total, d) => total + convertToBrl(+d.total_invested, d.country), 0)
+        -
+        +exchangeCost[0].cost_brl
+        +
+        d3.sum(dividends, d => d.value)
+    const profitMargin = profit / totalBought
 
     return { totalInvested, profit, profitMargin, fiiData, fiiDataGrouped, treemapData, dividends }
 }

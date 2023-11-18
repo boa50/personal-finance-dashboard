@@ -37,6 +37,12 @@ export interface Dividend {
   country: string
 }
 
+export interface Crypto {
+  coin: string
+  cost: number
+  quantity: number
+}
+
 // CHARTS
 export interface InteractionData {
   xPos: number
