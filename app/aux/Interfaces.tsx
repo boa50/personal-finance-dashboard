@@ -1,3 +1,13 @@
+export interface Investment {
+  product: string
+  sub_product: string
+  country: string
+  total_invested: number
+  profit_executed: number
+  profit_to_execute: number
+  cost: number
+}
+
 export interface Stock {
     ticker: string
     type: string
@@ -13,6 +23,7 @@ export interface Stock {
     average_price: number
     value_actual: number
     profit_margin: number
+    profit_selling: number
     profit: number
     total_invested: string 
 }

@@ -1,14 +1,15 @@
 import * as d3 from 'd3'
 import * as fs from 'fs'
 import { BigQuery } from '@google-cloud/bigquery'
-import { Bar, Dividend, Exchange, ExchangeCost, LinePoint, Lollipop, Stock, Tree, Crypto } from "../aux/Interfaces"
+import { Bar, Dividend, Exchange, ExchangeCost, LinePoint, Lollipop, Stock, Tree, Crypto, Investment } from "../aux/Interfaces"
 
 const tables = {
     stocks: '`' + process.env.DB_SCHEMA + '.stocks`',
     exchange: '`' + process.env.DB_SCHEMA + '.exchange`',
     exchangeCost: '`' + process.env.DB_SCHEMA + '.exchange_cost`',
     dividends: '`' + process.env.DB_SCHEMA + '.dividends`',
-    crypto: '`' + process.env.DB_SCHEMA + '.crypto`'
+    crypto: '`' + process.env.DB_SCHEMA + '.crypto`',
+    investments: '`' + process.env.DB_SCHEMA + '.investments`'
 }
 
 const options = {
@@ -33,10 +34,10 @@ const getResults: ((query: string) => Promise<Array<any>>) = async (query: strin
     return rows
 }
 
-const getStocks: (() => Promise<Array<Stock>>) = async () => 
+const getInvestments: (() => Promise<Array<Investment>>) = async () => 
     isDb ?
-        getResults(`SELECT * FROM ${tables.stocks}`) :
-        getMockData('stocks')
+        getResults(`SELECT * FROM ${tables.investments}`) :
+        getMockData('investments')
 
 const getFiis: (() => Promise<Array<Lollipop>>) = async () => {
     if (isDb) {
@@ -73,17 +74,6 @@ const getFiis: (() => Promise<Array<Lollipop>>) = async () => {
 const getTreemapData: (() => Promise<Array<Tree>>) = async () => 
     isDb ?    
         getResults(
-        //     `SELECT 
-        //     'leaf' AS type, 
-        //     CASE
-        //         WHEN type = 'FII' THEN 'FII'
-        //         WHEN country = 'BR' THEN 'Stocks BR'
-        //     ELSE 'Stocks Int'
-        //     END AS label,
-        //     country,
-        //     SUM(total_invested) AS value
-        // FROM ${tables.stocks}
-        // GROUP BY label, country`
             `SELECT 
                 'leaf' AS type, 
                 CASE
@@ -121,11 +111,6 @@ const getDividends: (() => Promise<Array<Dividend>>) = async () =>
             WHERE DATE_DIFF(DATE_TRUNC(CURRENT_DATE(), MONTH), d.month, MONTH) <= 24`) :
         getMockData('dividends').map(d => {return { ...d, month: { value: d.month } }})
 
-const getCrypto: (() => Promise<Array<Crypto>>) = async () =>
-    isDb ?    
-        getResults(`SELECT * FROM ${tables.crypto}`) :
-        getMockData('crypto')
-
 interface GetData {
     totalInvested: number
     profit: number
@@ -145,8 +130,16 @@ export const getData: (() => Promise<GetData>) = async () => {
     }
     const exchangeCost = await getExchangeCostData()
 
-    const stocks = await getStocks()
-    const crypto = await getCrypto()
+    const investments = await getInvestments()
+    const totalInvested = investments.reduce((total, d) => total + convertToBrl(+d.total_invested, d.country), 0)
+    const totalBought = investments.reduce((total, d) => total + (d.cost ? +d.cost : 0), 0) + +exchangeCost[0].cost_brl
+    const profit = investments.reduce((total, d) => 
+        total + 
+        convertToBrl(+d.profit_executed, d.country) +
+        (d.profit_to_execute ? convertToBrl(+d.profit_to_execute, d.country) : (convertToBrl(+d.total_invested, d.country) - +d.cost))
+    , 0)
+    const profitMargin = profit / totalBought
+
     const fiiData = await getFiis()
     const treemapData = (await getTreemapData())
         .map(d => {
@@ -176,33 +169,5 @@ export const getData: (() => Promise<GetData>) = async () => {
         })
         .sort((a, b) => b.value - a.value)
 
-    const totalInvested = 
-        stocks.reduce((total, d) => total + convertToBrl(+d.total_invested, d.country), 0)
-        +
-        crypto.reduce((total, d) => total + convertToBrl(+d.quantity, d.coin), 0)
-    const totalBought = 
-        stocks
-            .filter(d => d.country == 'BR')
-            .reduce((total, d) => total + +d.balance, 0)
-        +
-        +exchangeCost[0].cost_brl
-        +
-        crypto.reduce((total, d) => total + +d.cost, 0)
-    const profit = 
-        stocks
-            .filter(d => d.country == 'BR')
-            .reduce((total, d) => total + +d.profit, 0)
-        +
-        stocks
-            .filter(d => d.country == 'US')
-            .reduce((total, d) => total + convertToBrl(+d.total_invested, d.country), 0)
-        -
-        +exchangeCost[0].cost_brl
-        +
-        d3.sum(dividends, d => d.value)
-    const profitMargin = profit / totalBought
-
     return { totalInvested, profit, profitMargin, fiiData, fiiDataGrouped, treemapData, dividends }
 }
-
-    
