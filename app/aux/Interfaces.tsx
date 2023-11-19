@@ -61,6 +61,17 @@ export interface Margin {
   bottom: number
 }
 
+export interface Kpis {
+  totalInvested: number
+  cost: number
+  profitExecuted: number
+  profitToExecute: number
+  profit: number
+  profitExecutedMargin: number
+  profitToExecuteMargin: number
+  profitMargin: number
+}
+
 export interface SvgDims {
   width: number
   height: number

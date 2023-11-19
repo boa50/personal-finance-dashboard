@@ -9,6 +9,7 @@ const inter = Inter({ subsets: ['latin'] })
 export const metadata: Metadata = {
     title: 'Personal Finances',
     description: 'Personal finances dashboard created with React and D3',
+    icons: { icon: "./icon.png" }
 }
 
 export default function RootLayout({

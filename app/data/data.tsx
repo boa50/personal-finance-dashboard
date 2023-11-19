@@ -1,7 +1,7 @@
 import * as d3 from 'd3'
 import * as fs from 'fs'
 import { BigQuery } from '@google-cloud/bigquery'
-import { Bar, Dividend, Exchange, ExchangeCost, LinePoint, Lollipop, Stock, Tree, Crypto, Investment } from "../aux/Interfaces"
+import { Bar, Dividend, Exchange, ExchangeCost, LinePoint, Lollipop, Stock, Tree, Crypto, Investment, Kpis } from "../aux/Interfaces"
 
 const tables = {
     stocks: '`' + process.env.DB_SCHEMA + '.stocks`',
@@ -71,30 +71,6 @@ const getFiis: (() => Promise<Array<Lollipop>>) = async () => {
     })
 }
 
-const getTreemapData: (() => Promise<Array<Tree>>) = async () => 
-    isDb ?    
-        getResults(
-            `SELECT 
-                'leaf' AS type, 
-                CASE
-                    WHEN type = 'FII' THEN 'FII'
-                    WHEN country = 'BR' THEN 'Stocks BR'
-                ELSE 'Stocks Int'
-                END AS label,
-                country,
-                SUM(total_invested) AS value
-            FROM ${tables.stocks}
-            GROUP BY label, country
-            UNION ALL
-            SELECT 
-                'leaf' AS type,
-                coin AS label,
-                coin AS country,
-                quantity AS value 
-            FROM ${tables.crypto}`
-        ) :
-        getMockData('treemap')
-
 const getExchangeData: (() => Promise<Array<Exchange>>) = async () =>
     isDb ?    
         getResults(`SELECT * FROM ${tables.exchange}`) :
@@ -112,9 +88,7 @@ const getDividends: (() => Promise<Array<Dividend>>) = async () =>
         getMockData('dividends').map(d => {return { ...d, month: { value: d.month } }})
 
 interface GetData {
-    totalInvested: number
-    profit: number
-    profitMargin: number
+    kpis: Kpis
     fiiData: Array<Lollipop>
     fiiDataGrouped: Array<Bar>
     treemapData: Array<Tree>
@@ -131,21 +105,45 @@ export const getData: (() => Promise<GetData>) = async () => {
     const exchangeCost = await getExchangeCostData()
 
     const investments = await getInvestments()
-    const totalInvested = investments.reduce((total, d) => total + convertToBrl(+d.total_invested, d.country), 0)
-    const totalBought = investments.reduce((total, d) => total + (d.cost ? +d.cost : 0), 0) + +exchangeCost[0].cost_brl
-    const profit = investments.reduce((total, d) => 
-        total + 
-        convertToBrl(+d.profit_executed, d.country) +
-        (d.profit_to_execute ? convertToBrl(+d.profit_to_execute, d.country) : (convertToBrl(+d.total_invested, d.country) - +d.cost))
-    , 0)
-    const profitMargin = profit / totalBought
+    const kpis = {
+        totalInvested: investments.reduce((total, d) => total + convertToBrl(+d.total_invested, d.country), 0),
+        cost: investments.reduce((total, d) => total + (d.cost ? +d.cost : 0), 0) + +exchangeCost[0].cost_brl,
+        profitExecuted: investments.reduce((total, d) => total + convertToBrl(+d.profit_executed, d.country), 0),
+        profitToExecute: investments.reduce((total, d) => 
+            total + 
+            (d.profit_to_execute ? 
+                convertToBrl(+d.profit_to_execute, d.country) : 
+                (convertToBrl(+d.total_invested, d.country) - +d.cost))
+        , 0),
+        profit: -1,
+        profitExecutedMargin: -1,
+        profitToExecuteMargin: -1,
+        profitMargin: -1
+    }
+    kpis.profit = kpis.profitExecuted + kpis.profitToExecute
+    kpis.profitExecutedMargin = kpis.profitExecuted / kpis.cost
+    kpis.profitToExecuteMargin = kpis.profitToExecute / kpis.cost
+    kpis.profitMargin = kpis.profit / kpis.cost
 
-    const fiiData = await getFiis()
-    const treemapData = (await getTreemapData())
+    const treemapData = [...d3.group(investments, d => d.product)]
         .map(d => {
             return {
-                ...d,
-                value: convertToBrl(+d.value, d.country as string)
+                type: 'leaf',
+                label: d[0],
+                country: d[1][0].country,
+                value: d3.sum(d[1], d => convertToBrl(+d.total_invested, d.country))
+            }
+        })
+        .sort((a, b) => b.value - a.value) as Array<Tree>
+
+    const fiiData = await getFiis()
+
+    const fiiDataGrouped = [...d3.group(fiiData, d => d.category)]
+        .map(d => { 
+            return { 
+                label: d[0], 
+                value: d3.sum(d[1], d => d.value),
+                category: d[0]
             }
         })
         .sort((a, b) => b.value - a.value)
@@ -159,15 +157,5 @@ export const getData: (() => Promise<GetData>) = async () => {
         })
         .sort((a, b) => a.month.getTime() - b.month.getTime())
 
-    const fiiDataGrouped = [...d3.group(fiiData, d => d.category)]
-        .map(d => { 
-            return { 
-                label: d[0], 
-                value: d3.sum(d[1], d => d.value),
-                category: d[0]
-            }
-        })
-        .sort((a, b) => b.value - a.value)
-
-    return { totalInvested, profit, profitMargin, fiiData, fiiDataGrouped, treemapData, dividends }
+    return { kpis, fiiData, fiiDataGrouped, treemapData, dividends }
 }
