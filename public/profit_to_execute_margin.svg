@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Uploaded to: SVG Repo, www.svgrepo.com, Transformed by: SVG Repo Mixer Tools -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="800px"
+   height="800px"
+   viewBox="0 0 24 24"
+   fill="none"
+   version="1.1"
+   id="svg15"
+   sodipodi:docname="profitToExecute.svg"
+   inkscape:version="0.92.5 (2060ec1f9f, 2020-04-08)">
+  <metadata
+     id="metadata21">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <defs
+     id="defs19" />
+  <sodipodi:namedview
+     pagecolor="#000000"
+     bordercolor="#666666"
+     borderopacity="1"
+     objecttolerance="10"
+     gridtolerance="10"
+     guidetolerance="10"
+     inkscape:pageopacity="0"
+     inkscape:pageshadow="2"
+     inkscape:window-width="2564"
+     inkscape:window-height="1571"
+     id="namedview17"
+     showgrid="false"
+     inkscape:zoom="0.59"
+     inkscape:cx="694.67764"
+     inkscape:cy="515.24629"
+     inkscape:window-x="0"
+     inkscape:window-y="54"
+     inkscape:window-maximized="0"
+     inkscape:current-layer="svg15" />
+  <g
+     id="SVGRepo_bgCarrier"
+     stroke-width="0" />
+  <g
+     id="SVGRepo_tracerCarrier"
+     stroke-linecap="round"
+     stroke-linejoin="round" />
+  <g
+     id="SVGRepo_iconCarrier">
+    <path
+       d="M12 14.5C13.3807 14.5 14.5 13.3807 14.5 12C14.5 10.6193 13.3807 9.5 12 9.5C10.6193 9.5 9.5 10.6193 9.5 12C9.5 13.3807 10.6193 14.5 12 14.5Z"
+       stroke="#FFFFFF"
+       stroke-width="1.5"
+       stroke-miterlimit="10"
+       stroke-linecap="round"
+       stroke-linejoin="round"
+       id="path4" />
+    <path
+       d="M18.5 9.5V14.5"
+       stroke="#FFFFFF"
+       stroke-width="1.5"
+       stroke-miterlimit="10"
+       stroke-linecap="round"
+       stroke-linejoin="round"
+       id="path6" />
+    <path
+       d="M5 22C7.20914 22 9 20.2091 9 18C9 15.7909 7.20914 14 5 14C2.79086 14 1 15.7909 1 18C1 20.2091 2.79086 22 5 22Z"
+       stroke="#FFFFFF"
+       stroke-width="1.5"
+       stroke-miterlimit="10"
+       stroke-linecap="round"
+       stroke-linejoin="round"
+       id="path8" />
+    <path
+       d="M5.25 16.75V17.68C5.25 18.03 5.07001 18.36 4.76001 18.54L4 19"
+       stroke="#FFFFFF"
+       stroke-width="1.5"
+       stroke-miterlimit="10"
+       stroke-linecap="round"
+       stroke-linejoin="round"
+       id="path10" />
+    <path
+       d="M2 15.2V9C2 5.5 4 4 7 4H17C20 4 22 5.5 22 9V15C22 18.5 20 20 17 20H8.5"
+       stroke="#FFFFFF"
+       stroke-width="1.5"
+       stroke-miterlimit="10"
+       stroke-linecap="round"
+       stroke-linejoin="round"
+       id="path12" />
+  </g>
+  <g
+     style="fill:none"
+     id="g106"
+     transform="matrix(0.27542372,0,0,0.27542372,2.2627125,4.2966107)">
+    <g
+       id="SVGRepo_bgCarrier-3"
+       style="stroke-width:0" />
+    <g
+       id="SVGRepo_tracerCarrier-6"
+       style="stroke-linecap:round;stroke-linejoin:round" />
+    <g
+       id="SVGRepo_iconCarrier-7">
+      <path
+         id="path82"
+         d="M 16,8 8,16"
+         inkscape:connector-curvature="0"
+         style="stroke:#ffffff;stroke-width:2;stroke-linecap:round;stroke-linejoin:round" />
+      <path
+         id="path84"
+         d="m 9,9.01001 v -0.01"
+         inkscape:connector-curvature="0"
+         style="stroke:#ffffff;stroke-width:2;stroke-linecap:round;stroke-linejoin:round" />
+      <path
+         id="path86"
+         d="M 15,15.01 V 15"
+         inkscape:connector-curvature="0"
+         style="stroke:#ffffff;stroke-width:2;stroke-linecap:round;stroke-linejoin:round" />
+      <path
+         id="path88"
+         d="m 3,12 c 0,-7.4115 1.5885,-9 9,-9 7.4115,0 9,1.5885 9,9 0,7.4115 -1.5885,9 -9,9 -7.4115,0 -9,-1.5885 -9,-9 z"
+         inkscape:connector-curvature="0"
+         style="stroke:#ffffff;stroke-width:2" />
+    </g>
+  </g>
+</svg>

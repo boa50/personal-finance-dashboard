@@ -18,23 +18,28 @@ const Home = async() => {
                     <Card 
                         title='Total Invested'
                         value={kpis.totalInvested}
-                        format='BRL'/>
+                        format='BRL'
+                        image='totalInvested' />
                     <Card 
                         title='Profit Executed'
                         value={kpis.profitExecuted}
-                        format='BRL'/>
+                        format='BRL'
+                        image='profitExecuted' />
                     <Card 
                         title='Profit Executed Margin'
                         value={kpis.profitExecutedMargin}
-                        format='Percentage'/>
+                        format='Percentage'
+                        image='profitExecutedMargin' />
                     <Card 
                         title='Profit to Execute'
                         value={kpis.profitToExecute}
-                        format='BRL'/>
+                        format='BRL'
+                        image='profitToExecute' />
                     <Card 
                         title='Profit to Execute Margin'
                         value={kpis.profitToExecuteMargin}
-                        format='Percentage'/>
+                        format='Percentage'
+                        image='profitToExecuteMargin' />
                 </div>
                 <div className="flex min-w-full flex-row items-stretch p-4">
                     <TreemapChart

@@ -82,7 +82,7 @@ const BarChart = ({ data, svgDims, title, legend = true, axis = true }: ChartPro
                     y={y(0) + 7}
                     className='axis-label bar'
                     alignmentBaseline='central'
-                    transform={`rotate(-25 ${xPos + 7} ${y(0) - x.bandwidth()})`}
+                    transform={`rotate(-20 ${xPos + 7} ${y(0) - x.bandwidth() * 1.25})`}
                 >
                     {d.label}
                 </text>

@@ -35,8 +35,6 @@ const TreemapChart = ({ data, svgDims, title }: ChartProps) => {
         return treeGenerator(hierarchy)
     }, [hierarchy, width, height])
 
-     
-
     const colour = useMemo(() => {
         const categories = [...new Set(hierarchy.data.children.map(d => d.label))]
 
