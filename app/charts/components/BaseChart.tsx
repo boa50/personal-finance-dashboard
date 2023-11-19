@@ -14,7 +14,7 @@ interface Props {
 const BaseChart = ({ title, interactionData, svgDims, width, height, margin, children }: Props) => {
     return (
         <div>
-            <h2 className='font-semibold ml-4'>{title}</h2>
+            <h2 className='font-semibold text-neutral-200 ml-4'>{title}</h2>
             <div style={{ position: 'relative' }}>
                 <svg width={svgDims.width} height={svgDims.height} id={`barchart-${title}`}>
                     <g 

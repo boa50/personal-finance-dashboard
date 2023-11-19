@@ -17,7 +17,7 @@ export const BRL = {
 
         const formatter = new Intl.NumberFormat('pt-BR', options)
 
-        return formatter.format(num).replace('mil', 'K')
+        return formatter.format(num).replace('mil', 'K').replace('mi', 'M')
 
     } 
 }
