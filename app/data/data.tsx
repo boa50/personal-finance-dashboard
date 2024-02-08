@@ -48,7 +48,8 @@ const getFiis: (() => Promise<Array<Lollipop>>) = async () => {
                 total_invested, 
                 fii_sector
             FROM ${tables.stocks} 
-            WHERE type = 'FII'`
+            WHERE type = 'FII'
+            AND total_invested > 0`
         )
     
         return rows.map(d => {
