@@ -2,6 +2,7 @@ import * as d3 from 'd3'
 import * as fs from 'fs'
 import { BigQuery } from '@google-cloud/bigquery'
 import { Bar, Dividend, Exchange, ExchangeCost, LinePoint, Lollipop, Stock, Tree, Crypto, Investment, Kpis } from "../aux/Interfaces"
+import { getGCPCredentials } from './connection'
 
 const tables = {
     stocks: '`' + process.env.DB_SCHEMA + '.stocks`',
@@ -12,21 +13,13 @@ const tables = {
     investments: '`' + process.env.DB_SCHEMA + '.investments`'
 }
 
-const options = {
-    keyFilename: process.env.KEY_FILENAME,
-    projectId: process.env.PROJECT_ID,
-    scopes: [
-        'https://www.googleapis.com/auth/drive.readonly'
-    ]
-}
-
 const isDb = process.env.DATASOURCE == 'db'
 
 const getMockData = (filename: string) =>
     d3.csvParse(fs.readFileSync(`./app/data/mock/${filename}.csv`, 'utf8')) as unknown as Array<any>
 
 const getResults: ((query: string) => Promise<Array<any>>) = async (query: string) => {
-    const bigQuery = new BigQuery(options)
+    const bigQuery = new BigQuery(getGCPCredentials())
 
     const [job] = await bigQuery.createQueryJob({ query: query })
     const [rows] = await job.getQueryResults()
