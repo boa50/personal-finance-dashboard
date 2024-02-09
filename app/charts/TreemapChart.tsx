@@ -35,14 +35,14 @@ const TreemapChart = ({ data, svgDims, title }: ChartProps) => {
         return treeGenerator(hierarchy)
     }, [hierarchy, width, height])
 
-    const colour = useMemo(() => {
-        const categories = [...new Set(hierarchy.data.children.map(d => d.label))]
+    // const colour = useMemo(() => {
+    //     const categories = [...new Set(hierarchy.data.children.map(d => d.label))]
 
-        return d3
-            .scaleOrdinal()
-            .domain(categories)
-            .range(colourSchemeSequential.toReversed())
-    }, [hierarchy])
+    //     return d3
+    //         .scaleOrdinal()
+    //         .domain(categories)
+    //         .range(colourSchemeSequential.toReversed())
+    // }, [hierarchy])
 
     // const totalInvested = useMemo(() => {
     //     return d3.sum(data, d => d.value)
@@ -63,7 +63,7 @@ const TreemapChart = ({ data, svgDims, title }: ChartProps) => {
                 // }
                 // onMouseLeave={() => setInteractiondata(null)}
             >
-                <rect
+                {/* <rect
                     x={leaf.x0}
                     y={leaf.y0}
                     width={leaf.x1 - leaf.x0}
@@ -71,7 +71,7 @@ const TreemapChart = ({ data, svgDims, title }: ChartProps) => {
                     stroke='transparent'
                     fill={colour(leaf.data.label) as string}
                     className={'opacity-80 hover:opacity-100'}
-                />
+                /> */}
                 {/* <text
                     x={leaf.x0 + 10}
                     y={leaf.y0 + 10}
