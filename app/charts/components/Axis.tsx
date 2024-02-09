@@ -1,4 +1,4 @@
-import { Fragment } from "react"
+// import { Fragment } from "react"
 import { Margin } from "@/app/aux/Interfaces"
 
 interface Props {
@@ -77,10 +77,10 @@ const Axis = ({ x, y, width, height, margin, xFormatter, yFormatter, xTicks=8, x
     }
 
     return(
-        <Fragment>
+        <div>
             {xAxis}
             {yAxis}
-        </Fragment>
+        </div>
     )
 }
 
