@@ -42,11 +42,11 @@ const Home = async() => {
                         image='profitToExecuteMargin' />
                 </div>
                 <div className="flex min-w-full flex-row items-stretch p-4">
-                    <TreemapChart
+                    {/* <TreemapChart
                         title='Investments Distribution'
                         data={treemapData}
-                        svgDims={{ width: 650, height: 400 }} />
-                    {/* <BarChart 
+                        svgDims={{ width: 650, height: 400 }} /> */}
+                    <BarChart 
                         title='FIIs Grouped' 
                         data={fiiDataGrouped}
                         legend={false}
@@ -54,7 +54,7 @@ const Home = async() => {
                     <LollipopChart 
                         title='FIIs Lollipop' 
                         data={fiiData} 
-                        svgDims={{ width: 650, height: 400 }} /> */}
+                        svgDims={{ width: 650, height: 400 }} />
                 </div>
                 <div className="flex min-w-full flex-row items-stretch p-4">
                     <LineChart
