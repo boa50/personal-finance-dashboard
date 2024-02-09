@@ -14,7 +14,7 @@ const Home = async() => {
         <ConfigProvider theme={theme}>
             <main className="flex min-h-screen flex-col items-center p-8 pb-0">
                 <h1>Financial Dashboard</h1>
-                {/* <div className="flex min-w-full flex-row items-stretch p-4">
+                <div className="flex min-w-full flex-row items-stretch p-4">
                     <Card 
                         title='Total Invested'
                         value={kpis.totalInvested}
@@ -61,7 +61,7 @@ const Home = async() => {
                         title='Dividends on the Last 2 Years' 
                         data={dividends} 
                         svgDims={{ width: 1400, height: 300 }} />
-                </div> */}
+                </div>
             </main>
         </ConfigProvider>
     )
