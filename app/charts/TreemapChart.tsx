@@ -17,7 +17,7 @@ interface ChartProps {
 
 const TreemapChart = ({ data, svgDims, title }: ChartProps) => {
     const { width, height } = getDims({ svgDims, margin })
-    const [interactionData, setInteractiondata] = useState<InteractionData | null>(null)
+    // const [interactionData, setInteractiondata] = useState<InteractionData | null>(null)
 
     const hierarchy = useMemo(() => {
         const tree: Tree = {
@@ -44,24 +44,24 @@ const TreemapChart = ({ data, svgDims, title }: ChartProps) => {
             .range(colourSchemeSequential.toReversed())
     }, [hierarchy])
 
-    const totalInvested = useMemo(() => {
-        return d3.sum(data, d => d.value)
-    }, [data])
+    // const totalInvested = useMemo(() => {
+    //     return d3.sum(data, d => d.value)
+    // }, [data])
 
     const treemap = root.leaves().map((leaf, i) => {
         return (
             // <g key={`leaf-${leaf.data.label}`}
             <g key={i}
-                onMouseEnter={() =>
-                    setInteractiondata({
-                        xPos: leaf.x0 + ((leaf.x1 - leaf.x0) / 2),
-                        yPos: leaf.y0 + ((leaf.y1 - leaf.y0) / 2),
-                        label: leaf.data.label,
-                        value: `${Percentage.format(leaf.data.value / totalInvested)} 
-                        </br> ${BRL.format(leaf.data.value)}`
-                    })
-                }
-                onMouseLeave={() => setInteractiondata(null)}
+                // onMouseEnter={() =>
+                //     setInteractiondata({
+                //         xPos: leaf.x0 + ((leaf.x1 - leaf.x0) / 2),
+                //         yPos: leaf.y0 + ((leaf.y1 - leaf.y0) / 2),
+                //         label: leaf.data.label,
+                //         value: `${Percentage.format(leaf.data.value / totalInvested)} 
+                //         </br> ${BRL.format(leaf.data.value)}`
+                //     })
+                // }
+                // onMouseLeave={() => setInteractiondata(null)}
             >
                 <rect
                     x={leaf.x0}
@@ -72,7 +72,7 @@ const TreemapChart = ({ data, svgDims, title }: ChartProps) => {
                     fill={colour(leaf.data.label) as string}
                     className={'opacity-80 hover:opacity-100'}
                 />
-                <text
+                {/* <text
                     x={leaf.x0 + 10}
                     y={leaf.y0 + 10}
                     fontSize={12}
@@ -82,7 +82,7 @@ const TreemapChart = ({ data, svgDims, title }: ChartProps) => {
                     className='font-medium'
                 >
                     {leaf.data.label}
-                </text>
+                </text> */}
             </g>
         )
     })
@@ -95,7 +95,8 @@ const TreemapChart = ({ data, svgDims, title }: ChartProps) => {
             width={width}
             height={height}
             margin={margin}
-            interactionData={interactionData}
+            interactionData={null}
+            // interactionData={interactionData}
         >
             {treemap}
         </BaseChart>
