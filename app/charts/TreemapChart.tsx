@@ -41,7 +41,7 @@ const TreemapChart = ({ data, svgDims, title }: ChartProps) => {
         return d3
             .scaleOrdinal()
             .domain(categories)
-            .range(Array.prototype.reverse.call(colourSchemeSequential))
+            .range(Array.prototype.reverse.call([...colourSchemeSequential]))
     }, [hierarchy])
 
     const totalInvested = useMemo(() => {
