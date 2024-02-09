@@ -8,7 +8,7 @@ import LineChart from './charts/LineChart'
 import LollipopChart from './charts/LollipopChart'
 
 const Home = async() => {
-    // const { kpis, fiiData, fiiDataGrouped, treemapData, dividends } = await getData()
+    const { kpis, fiiData, fiiDataGrouped, treemapData, dividends } = await getData()
 
     return (
         <ConfigProvider theme={theme}>
