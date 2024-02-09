@@ -48,9 +48,10 @@ const TreemapChart = ({ data, svgDims, title }: ChartProps) => {
         return d3.sum(data, d => d.value)
     }, [data])
 
-    const treemap = root.leaves().map(leaf => {
+    const treemap = root.leaves().map((leaf, i) => {
         return (
-            <g key={`leaf-${leaf.data.label}`}
+            // <g key={`leaf-${leaf.data.label}`}
+            <g key={i}
                 onMouseEnter={() =>
                     setInteractiondata({
                         xPos: leaf.x0 + ((leaf.x1 - leaf.x0) / 2),
