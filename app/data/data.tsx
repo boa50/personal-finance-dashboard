@@ -102,7 +102,7 @@ export const getData: (() => Promise<GetData>) = async () => {
     const kpis = {
         totalInvested: investments.reduce((total, d) => total + convertToBrl(+d.total_invested, d.country), 0),
         cost: investments.reduce((total, d) => total + (d.cost ? +d.cost : 0), 0) + +exchangeCost[0].cost_brl,
-        profitExecuted: investments.reduce((total, d) => total + convertToBrl(+d.profit_executed, d.country), 0),
+        profitExecuted: investments.reduce((total, d) => total + convertToBrl(+d.profit_executed, d.country === 'Bitcoin' ? 'BR' : d.country), 0),
         profitToExecute: investments.reduce((total, d) => 
             total + 
             (d.profit_to_execute ? 
@@ -128,6 +128,7 @@ export const getData: (() => Promise<GetData>) = async () => {
                 value: d3.sum(d[1], d => convertToBrl(+d.total_invested, d.country))
             }
         })
+        .filter(d => d.value > 0)
         .sort((a, b) => b.value - a.value) as Array<Tree>
 
     const fiiData = await getFiis()
