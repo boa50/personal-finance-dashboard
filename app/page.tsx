@@ -8,7 +8,7 @@ import LineChart from './charts/LineChart'
 import LollipopChart from './charts/LollipopChart'
 
 // Trying to change cache behaviour
-export const revalidate = 0
+export const revalidate = 300
 
 const Home = async() => {
     const { kpis, fiiData, fiiDataGrouped, treemapData, dividends } = await getData()
