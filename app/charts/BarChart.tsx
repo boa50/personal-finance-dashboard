@@ -7,18 +7,20 @@ import { Bar, InteractionData, SvgDims } from '../aux/Interfaces'
 import { BRL } from '../aux/Formats'
 import { colourSchemeCategorical, margin as defaultMargin, barPadding } from '../aux/Constants'
 import { getDims } from '../aux/Utils'
+import { useResponsiveDims } from '../aux/useResponsiveDims'
 import BaseChart from './components/BaseChart'
 import Axis from './components/Axis'
 
 interface ChartProps {
     data: Array<Bar>
-    svgDims: SvgDims
+    svgDims?: Partial<SvgDims>
     title: string
     legend?: boolean
     axis?: boolean
 }
 
-const BarChart = ({ data, svgDims, title, legend = true, axis = true }: ChartProps) => {
+const BarChart = ({ data, svgDims: propSvgDims, title, legend = true, axis = true }: ChartProps) => {
+    const { containerRef, svgDims } = useResponsiveDims(propSvgDims, 400)
     const margin = { ...defaultMargin }
     margin.bottom = 64
     margin.left = 72
@@ -121,25 +123,27 @@ const BarChart = ({ data, svgDims, title, legend = true, axis = true }: ChartPro
     </g>
 
     return (
-        <BaseChart 
-            title={title}
-            svgDims={svgDims}
-            width={width}
-            height={height}
-            margin={margin}
-            interactionData={interactionData}
-        >
-            {bars}
-            {axis ? 
-                <Axis
-                    width={width}
-                    height={height}
-                    margin={margin}
-                    y={y}
-                    yFormatter={(value: number) => BRL.format(value, true)} /> 
-                : null}
-            {legend ? legendGroup : null}
-        </BaseChart>
+        <div ref={containerRef} className='w-full'>
+            <BaseChart 
+                title={title}
+                svgDims={svgDims}
+                width={width}
+                height={height}
+                margin={margin}
+                interactionData={interactionData}
+            >
+                {bars}
+                {axis ? 
+                    <Axis
+                        width={width}
+                        height={height}
+                        margin={margin}
+                        y={y}
+                        yFormatter={(value: number) => BRL.format(value, true)} /> 
+                    : null}
+                {legend ? legendGroup : null}
+            </BaseChart>
+        </div>
     )
 }
 

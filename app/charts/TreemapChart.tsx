@@ -8,14 +8,16 @@ import BaseChart from './components/BaseChart'
 import { Tree, TreeNode, InteractionData, SvgDims } from '../aux/Interfaces'
 import { BRL, Percentage } from '../aux/Formats'
 import { getDims } from '../aux/Utils'
+import { useResponsiveDims } from '../aux/useResponsiveDims'
 
 interface ChartProps {
     data: Array<Tree>
-    svgDims: SvgDims
+    svgDims?: Partial<SvgDims>
     title: string
 }
 
-const TreemapChart = ({ data, svgDims, title }: ChartProps) => {
+const TreemapChart = ({ data, svgDims: propSvgDims, title }: ChartProps) => {
+    const { containerRef, svgDims } = useResponsiveDims(propSvgDims, 400)
     const { width, height } = getDims({ svgDims, margin })
     const [interactionData, setInteractiondata] = useState<InteractionData | null>(null)
 
@@ -49,12 +51,16 @@ const TreemapChart = ({ data, svgDims, title }: ChartProps) => {
     }, [data])
 
     const treemap = root.leaves().map(leaf => {
+        const tileWidth = leaf.x1 - leaf.x0
+        const tileHeight = leaf.y1 - leaf.y0
+        const showLabel = tileWidth > 45 && tileHeight > 24
+
         return (
             <g key={`leaf-${leaf.data.label}`}
                 onMouseEnter={() =>
                     setInteractiondata({
-                        xPos: leaf.x0 + ((leaf.x1 - leaf.x0) / 2),
-                        yPos: leaf.y0 + ((leaf.y1 - leaf.y0) / 2),
+                        xPos: leaf.x0 + (tileWidth / 2),
+                        yPos: leaf.y0 + (tileHeight / 2),
                         label: leaf.data.label,
                         value: `${Percentage.format(leaf.data.value / totalInvested)} 
                         </br> ${BRL.format(leaf.data.value)}`
@@ -65,39 +71,42 @@ const TreemapChart = ({ data, svgDims, title }: ChartProps) => {
                 <rect
                     x={leaf.x0}
                     y={leaf.y0}
-                    width={leaf.x1 - leaf.x0}
-                    height={leaf.y1 - leaf.y0}
+                    width={tileWidth}
+                    height={tileHeight}
                     stroke='transparent'
                     fill={colour(leaf.data.label) as string}
                     className={'opacity-80 hover:opacity-100'}
                 />
-                <text
-                    x={leaf.x0 + 10}
-                    y={leaf.y0 + 10}
-                    fontSize={12}
-                    textAnchor='start'
-                    alignmentBaseline='hanging'
-                    fill='white'
-                    className='font-medium'
-                >
-                    {leaf.data.label}
-                </text>
+                {showLabel ? (
+                    <text
+                        x={leaf.x0 + 8}
+                        y={leaf.y0 + 8}
+                        fontSize={11}
+                        textAnchor='start'
+                        alignmentBaseline='hanging'
+                        fill='white'
+                        className='font-medium'
+                    >
+                        {leaf.data.label}
+                    </text>
+                ) : null}
             </g>
         )
     })
-    
 
     return (
-        <BaseChart 
-            title={title}
-            svgDims={svgDims}
-            width={width}
-            height={height}
-            margin={margin}
-            interactionData={interactionData}
-        >
-            {treemap}
-        </BaseChart>
+        <div ref={containerRef} className='w-full'>
+            <BaseChart 
+                title={title}
+                svgDims={svgDims}
+                width={width}
+                height={height}
+                margin={margin}
+                interactionData={interactionData}
+            >
+                {treemap}
+            </BaseChart>
+        </div>
     )
 }
 

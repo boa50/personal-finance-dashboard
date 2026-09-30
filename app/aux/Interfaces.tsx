@@ -77,6 +77,14 @@ export interface SvgDims {
   height: number
 }
 
+export interface ColSpan {
+  xs?: number
+  sm?: number
+  md?: number
+  lg?: number
+  xl?: number
+}
+
 // CHARTS
 export interface InteractionData {
   xPos: number

@@ -7,16 +7,18 @@ import { margin as defaultMargin } from '../aux/Constants'
 import { LinePoint, InteractionData, SvgDims } from '../aux/Interfaces'
 import { BRL } from '../aux/Formats'
 import { getDims } from '../aux/Utils'
+import { useResponsiveDims } from '../aux/useResponsiveDims'
 import BaseChart from './components/BaseChart'
 import Axis from './components/Axis'
 
 interface ChartProps {
     data: Array<LinePoint>
-    svgDims: SvgDims
+    svgDims?: Partial<SvgDims>
     title: string
 }
 
-const LineChart = ({ data, svgDims, title }: ChartProps) => {
+const LineChart = ({ data, svgDims: propSvgDims, title }: ChartProps) => {
+    const { containerRef, svgDims } = useResponsiveDims(propSvgDims, 320)
     const margin = { ...defaultMargin }
     margin.left = 86
     const { width, height } = getDims({ svgDims, margin })
@@ -41,6 +43,7 @@ const LineChart = ({ data, svgDims, title }: ChartProps) => {
             .line<LinePoint>()
             .x(d => x(d.month))
             .y(d => y(d.value))
+            .curve(d3.curveMonotoneX)
 
         return lineBuilder(data)
     }, [data, x, y]) as string
@@ -89,29 +92,32 @@ const LineChart = ({ data, svgDims, title }: ChartProps) => {
     })
 
     return (
-        <BaseChart 
-            title={title}
-            svgDims={svgDims}
-            width={width}
-            height={height}
-            margin={margin}
-            interactionData={interactionData}
-        >
-            <path
-                d={linePath}
-                className='line primary' />
-            {meanLine}
-            {tooltips}
-            <Axis 
-                x={x}
-                y={y}
+        <div ref={containerRef} className='w-full'>
+            <BaseChart 
+                title={title}
+                svgDims={svgDims}
                 width={width}
                 height={height}
                 margin={margin}
-                xFormatter={(value: Date) => value.toISOString().slice(0, 7)}
-                yFormatter={(value: number) => BRL.format(value, true)}
-                xTicksShow0={true} />
-        </BaseChart>
+                interactionData={interactionData}
+            >
+                <path
+                    d={linePath}
+                    className='line primary' />
+                {meanLine}
+                {tooltips}
+                <Axis 
+                    x={x}
+                    y={y}
+                    width={width}
+                    height={height}
+                    margin={margin}
+                    xTicks={width < 500 ? 4 : (width < 800 ? 6 : 8)}
+                    xFormatter={(value: Date) => value.toISOString().slice(0, 7)}
+                    yFormatter={(value: number) => BRL.format(value, true)}
+                    xTicksShow0={true} />
+            </BaseChart>
+        </div>
     )
 }
 

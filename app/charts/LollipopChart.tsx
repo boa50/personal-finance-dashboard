@@ -6,16 +6,18 @@ import { Lollipop, InteractionData, SvgDims } from '../aux/Interfaces'
 import { colourSchemeCategorical, margin as defaultMargin, barPadding } from '../aux/Constants'
 import { BRL, Percentage } from '../aux/Formats'
 import { getDims } from '../aux/Utils'
+import { useResponsiveDims } from '../aux/useResponsiveDims'
 import BaseChart from './components/BaseChart'
 import Axis from './components/Axis'
 
 interface ChartProps {
     data: Array<Lollipop>
-    svgDims: SvgDims
+    svgDims?: Partial<SvgDims>
     title: string
 }
 
-const LollipopChart = ({ data, svgDims, title }: ChartProps) => {
+const LollipopChart = ({ data, svgDims: propSvgDims, title }: ChartProps) => {
+    const { containerRef, svgDims } = useResponsiveDims(propSvgDims, 400)
     const margin = { ...defaultMargin }
     margin.left = 54
     const { width, height } = getDims({ svgDims, margin })
@@ -173,23 +175,25 @@ const LollipopChart = ({ data, svgDims, title }: ChartProps) => {
     </g>
 
     return (
-        <BaseChart 
-            title={title}
-            svgDims={svgDims}
-            width={width}
-            height={height}
-            margin={margin}
-            interactionData={interactionData}
-        >
-            {lollipops}
-            <Axis
+        <div ref={containerRef} className='w-full'>
+            <BaseChart 
+                title={title}
+                svgDims={svgDims}
                 width={width}
                 height={height}
-                margin={margin} 
-                x={x}
-                xFormatter={(value: number) => BRL.format(value, true)} />
-            {legend}
-        </BaseChart>
+                margin={margin}
+                interactionData={interactionData}
+            >
+                {lollipops}
+                <Axis
+                    width={width}
+                    height={height}
+                    margin={margin} 
+                    x={x}
+                    xFormatter={(value: number) => BRL.format(value, true)} />
+                {width >= 450 ? legend : null}
+            </BaseChart>
+        </div>
     )
 }
 
