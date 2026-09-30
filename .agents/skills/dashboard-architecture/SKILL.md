@@ -79,17 +79,19 @@ Domain-specific charts and metric cards binding financial data to interactive D3
 Top-level Next.js route handlers managing server data acquisition, metadata, and styling context:
 - **`app/layout.tsx`**: HTML root layout configuring Next.js font optimization (`Inter`), global stylesheets (`globals.css`), and the Ant Design SSR style registry.
 - **`lib/AntdRegistry.tsx`**: Client-side styled-components registry intercepting Ant Design inline styles for flicker-free Server-Side Rendering (SSR).
-- **`app/page.tsx`**: Async React Server Component executing `await getData()`, laying out the dashboard grid, and passing structured datasets to client charts.
+- **`app/page.tsx`**: Dynamic React Server Component (`export const dynamic = 'force-dynamic'`, `export const revalidate = 0`, `export const maxDuration = 30`) executing `await getData()` on demand via a Vercel Serverless Function, ensuring data changes reflect dynamically without redeployment.
+- **`app/api/finance/route.ts`**: Dedicated Vercel Function Route Handler (`GET`) returning the complete financial dataset as JSON for external services or dynamic clients.
 - **`theme/themeConfig.ts`**: Ant Design theme token configuration (`colorPrimary: '#1E88E5'`, `fontSize: 16`).
 
 ---
 
-## 3. Server vs Client Component Boundaries
+## 3. Server vs Client Component Boundaries & Dynamic Vercel Execution
 
-Personal Finance Dashboard strictly enforces the React Server Components (RSC) boundary model:
+Personal Finance Dashboard strictly enforces the React Server Components (RSC) boundary model combined with on-demand Vercel Serverless Functions:
 
-### Server Component Rules (`app/page.tsx`, `app/layout.tsx`)
+### Server Component Rules (`app/page.tsx`, `app/layout.tsx`, `app/api/*`)
 - `app/page.tsx` must remain an **async Server Component**. Never add `'use client'` to `page.tsx`.
+- Both `app/page.tsx` and `app/api/finance/route.ts` export `export const dynamic = 'force-dynamic'` and `export const revalidate = 0` so Next.js emits `ƒ (Dynamic)` serverless routes.
 - Data fetching occurs exclusively on the server at request time via `await getData()`.
 - Server Components have direct access to backend resources: GCP BigQuery SDK, Node.js `fs`, environment secrets (`process.env.GCP_KEY_ENCODED`).
 - Server Components pass serializable plain JavaScript objects and arrays (`kpis`, `fiiData`, `treemapData`, etc.) to client chart components as props.

@@ -7,6 +7,10 @@ import TreemapChart from './charts/TreemapChart'
 import LineChart from './charts/LineChart'
 import LollipopChart from './charts/LollipopChart'
 
+export const dynamic = 'force-dynamic'
+export const revalidate = 0
+export const maxDuration = 60
+
 const Home = async() => {
     const { kpis, fiiData, fiiDataGrouped, treemapData, dividends } = await getData()
 

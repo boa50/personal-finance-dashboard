@@ -82,7 +82,33 @@ This generates `.next/standalone`, bundling only necessary `node_modules` for mi
 
 ---
 
-## 4. Pre-Deployment Checklist
+## 4. Vercel Deployment & Serverless Functions
+
+When deploying to **Vercel**:
+- Both `app/page.tsx` and `app/api/finance/route.ts` are automatically deployed as **Vercel Serverless Functions** (Node.js runtime).
+- Because `export const dynamic = 'force-dynamic'` and `export const revalidate = 0` are declared, requests execute on-demand at request time, allowing BigQuery updates to reflect immediately without redeploying.
+- The `export const maxDuration = 60` setting in route files and `vercel.json` configures the maximum function execution window up to 60 seconds.
+- Database queries in `app/data/data.tsx` run concurrently using `Promise.all`, finishing within 3–5 seconds to stay well below the timeout threshold.
+- Set `DATASOURCE=db`, `DB_SCHEMA`, `PROJECT_ID`, and `GCP_KEY_ENCODED` under **Project Settings → Environment Variables** on Vercel.
+
+### Vercel Configuration (`vercel.json`)
+```json
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "functions": {
+    "app/page.tsx": {
+      "maxDuration": 60
+    },
+    "app/api/finance/route.ts": {
+      "maxDuration": 60
+    }
+  }
+}
+```
+
+---
+
+## 5. Pre-Deployment Checklist
 
 Before pushing changes to production:
 

@@ -64,10 +64,11 @@ Personal Finance Dashboard supports zero-dependency offline development alongsid
 
 > **Rule**: Keep database queries and filesystem reads strictly encapsulated within `app/data/`. Never import `@google-cloud/bigquery` or `fs` into presentation components.
 
-### 3. Server vs Client Component Boundaries
+### 3. Server vs Client Component Boundaries & Dynamic Vercel Functions
 
 The project adheres strictly to the React Server Components (RSC) boundary paradigm:
-- **`app/page.tsx` must remain an async Server Component**: Do not add `'use client'` to `page.tsx`.
+- **`app/page.tsx` is an on-demand Dynamic Server Component**: Configured with `export const dynamic = 'force-dynamic'`, `export const revalidate = 0`, and `export const maxDuration = 60`. It is compiled by Next.js and deployed on Vercel as a Serverless Function executing `getData()` at request time so BigQuery changes reflect dynamically without redeployment.
+- **`app/api/finance/route.ts` is a Vercel Route Function**: Exposes `GET /api/finance` with `force-dynamic` and `maxDuration = 60` returning the complete portfolio dataset in JSON format.
 - **`app/charts/*` components are Client Components**: Every chart file (`BarChart.tsx`, `LineChart.tsx`, `LollipopChart.tsx`, `TreemapChart.tsx`) must declare `'use client'` at the top to support local interactivity (`useState`, `useMemo`, SVG pointer events).
 - **Transient UI State**: Tooltip states (`interactionData: InteractionData | null`) remain strictly isolated within individual chart components.
 
@@ -120,9 +121,13 @@ personal-finance-dashboard/
 │
 ├── app/                            # Next.js 14 App Router pages, charts & data logic
 │   ├── layout.tsx                  # Root layout, Google Inter font, Metadata, AntdRegistry
-│   ├── page.tsx                    # Primary dashboard Server Component (calls getData())
+│   ├── page.tsx                    # Primary dashboard Server Component (dynamic Vercel Function)
 │   ├── globals.css                 # Global CSS variables, dark theme gradients, SVG classes
 │   ├── icon.png                    # Application browser favicon
+│   │
+│   ├── api/                        # Next.js App Router API Route Handlers (Vercel Functions)
+│   │   └── finance/
+│   │       └── route.ts            # GET /api/finance endpoint returning portfolio JSON
 │   │
 │   ├── aux/                        # Core utilities, formatters, and TypeScript interfaces
 │   │   ├── Constants.tsx           # D3 color palettes, default margins, barPadding

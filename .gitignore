@@ -40,3 +40,5 @@ next-env.d.ts
 
 # mock files
 /app/data/mock/*.csv
+
+.plans

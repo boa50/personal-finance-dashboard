@@ -90,15 +90,20 @@ interface GetData {
 }
 
 export const getData: (() => Promise<GetData>) = async () => {
-    const exchange = await getExchangeData()
+    const [exchange, exchangeCost, investments, fiiData, rawDividends] = await Promise.all([
+        getExchangeData(),
+        getExchangeCostData(),
+        getInvestments(),
+        getFiis(),
+        getDividends()
+    ])
+
     const convertToBrl = (value: number, country: string) => {
         const filteredExch = exchange.filter(f => f.from == country)
 
-        return country !== 'BR' ? value * +filteredExch[0].rate : value
+        return country !== 'BR' && filteredExch.length > 0 ? value * +filteredExch[0].rate : value
     }
-    const exchangeCost = await getExchangeCostData()
 
-    const investments = await getInvestments()
     const kpis = {
         totalInvested: investments.reduce((total, d) => total + convertToBrl(+d.total_invested, d.country), 0),
         cost: investments.reduce((total, d) => total + (d.cost ? +d.cost : 0), 0) + +exchangeCost[0].cost_brl,
@@ -115,9 +120,9 @@ export const getData: (() => Promise<GetData>) = async () => {
         profitMargin: -1
     }
     kpis.profit = kpis.profitExecuted + kpis.profitToExecute
-    kpis.profitExecutedMargin = kpis.profitExecuted / kpis.cost
-    kpis.profitToExecuteMargin = kpis.profitToExecute / kpis.cost
-    kpis.profitMargin = kpis.profit / kpis.cost
+    kpis.profitExecutedMargin = kpis.cost > 0 ? kpis.profitExecuted / kpis.cost : 0
+    kpis.profitToExecuteMargin = kpis.cost > 0 ? kpis.profitToExecute / kpis.cost : 0
+    kpis.profitMargin = kpis.cost > 0 ? kpis.profit / kpis.cost : 0
 
     const treemapData = [...d3.group(investments, d => d.product)]
         .map(d => {
@@ -131,8 +136,6 @@ export const getData: (() => Promise<GetData>) = async () => {
         .filter(d => d.value > 0)
         .sort((a, b) => b.value - a.value) as Array<Tree>
 
-    const fiiData = await getFiis()
-
     const fiiDataGrouped = [...d3.group(fiiData, d => d.category)]
         .map(d => { 
             return { 
@@ -143,7 +146,7 @@ export const getData: (() => Promise<GetData>) = async () => {
         })
         .sort((a, b) => b.value - a.value)
 
-    const dividends = [...d3.group(await getDividends(), d => d.month.value)]
+    const dividends = [...d3.group(rawDividends, d => d.month.value)]
         .map(d => {
             return {
                 month: new Date(d[0]),
