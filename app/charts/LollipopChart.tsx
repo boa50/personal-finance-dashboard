@@ -191,7 +191,7 @@ const LollipopChart = ({ data, svgDims: propSvgDims, title }: ChartProps) => {
                     margin={margin} 
                     x={x}
                     xFormatter={(value: number) => BRL.format(value, true)} />
-                {width >= 450 ? legend : null}
+                {width >= 320 ? legend : null}
             </BaseChart>
         </div>
     )

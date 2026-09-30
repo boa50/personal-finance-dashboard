@@ -50,7 +50,7 @@ const Home = async() => {
 
     return (
         <ConfigProvider theme={theme}>
-            <main className="flex min-h-screen flex-col items-center p-4 sm:p-6 lg:p-8 max-w-7xl w-full mx-auto pb-8">
+            <main className="flex min-h-screen flex-col items-center p-4 sm:p-6 lg:p-8 xl:px-10 w-full pb-8">
                 <div className="w-full flex items-center justify-between mb-6">
                     <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-white">Financial Dashboard</h1>
                 </div>
@@ -73,39 +73,39 @@ const Home = async() => {
                 </div>
 
                 {/* Main Charts Grid: 12-column responsive layout
-                    - Mobile (xs): each chart takes full width (12 cols, 1 per row)
-                    - Tablet (md): Treemap takes 12 cols, Bar & Lollipop take 6 cols each
-                    - Desktop (lg): 5 cols + 3 cols + 4 cols = 12 cols
+                    - Mobile (xs) & Tablet (md): each chart takes full width (12 cols, 1 per row)
+                    - Larger screens (lg): 2/3 (8 cols) and 1/3 (4 cols) distribution
+                      Row 1: Investments Distribution (2/3) & FIIs Grouped (1/3)
+                      Row 2: Dividends on the Last 2 Years (2/3) & FIIs Lollipop (1/3)
                 */}
-                <DashboardGrid className="mb-6">
-                    <ChartCard colSpan={{ xs: 12, md: 12, lg: 5 }}>
+                <DashboardGrid>
+                    {/* Row 1 on large screens: Investments Distribution (2/3) & FIIs Grouped (1/3) */}
+                    <ChartCard colSpan={{ xs: 12, md: 12, lg: 8 }}>
                         <TreemapChart
                             title='Investments Distribution'
                             data={treemapData}
                             svgDims={{ height: 400 }} />
                     </ChartCard>
-                    <ChartCard colSpan={{ xs: 12, md: 6, lg: 3 }}>
+                    <ChartCard colSpan={{ xs: 12, md: 12, lg: 4 }}>
                         <BarChart 
                             title='FIIs Grouped' 
                             data={fiiDataGrouped}
                             legend={false}
                             svgDims={{ height: 400 }} />
                     </ChartCard>
-                    <ChartCard colSpan={{ xs: 12, md: 6, lg: 4 }}>
+
+                    {/* Row 2 on large screens: Dividends on the Last 2 Years (2/3) & FIIs Lollipop (1/3) */}
+                    <ChartCard colSpan={{ xs: 12, md: 12, lg: 8 }}>
+                        <LineChart
+                            title='Dividends on the Last 2 Years' 
+                            data={dividends} 
+                            svgDims={{ height: 400 }} />
+                    </ChartCard>
+                    <ChartCard colSpan={{ xs: 12, md: 12, lg: 4 }}>
                         <LollipopChart 
                             title='FIIs Lollipop' 
                             data={fiiData} 
                             svgDims={{ height: 400 }} />
-                    </ChartCard>
-                </DashboardGrid>
-
-                {/* Full-width Timeline Chart Grid */}
-                <DashboardGrid>
-                    <ChartCard colSpan={{ xs: 12, lg: 12 }}>
-                        <LineChart
-                            title='Dividends on the Last 2 Years' 
-                            data={dividends} 
-                            svgDims={{ height: 320 }} />
                     </ChartCard>
                 </DashboardGrid>
             </main>
