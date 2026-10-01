@@ -37,7 +37,8 @@ const Axis = ({ x, y, width, height, margin, xFormatter, yFormatter, xTicks=8, x
                     <text
                         className='axis-text x'
                         x={x(value)}
-                        y={height + margin.bottom - 5}
+                        y={height + 16}
+                        dominantBaseline='central'
                         alignmentBaseline='central'
                     >
                         {xFormatter ? xFormatter(value) : value.toString()}
@@ -68,6 +69,7 @@ const Axis = ({ x, y, width, height, margin, xFormatter, yFormatter, xTicks=8, x
                         className='axis-text y'
                         x={-10}
                         y={y(value)}
+                        dominantBaseline='central'
                         alignmentBaseline='central'
                     >
                         {yFormatter ? yFormatter(value): value}

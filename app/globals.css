@@ -6,7 +6,10 @@
   --foreground-hex: #FFFFFF;
   --background-start-hex: #28282B;
   --background-end-hex: #000000;
-  --axis-hex: #E5E4E2;
+  --axis-line-hex: rgba(255, 255, 255, 0.2);
+  --axis-numerical-hex: #9CA3AF;
+  --axis-category-hex: #F3F4F6;
+  --axis-hex: #9CA3AF;
   --chart-primary: #4e79a7;
   --chart-divergent: #f28e2c;
 }
@@ -23,12 +26,14 @@ h1 {
 }
 
 .axis-line {
-  stroke: var(--axis-hex);
+  stroke: var(--axis-line-hex);
 }
 
+/* Numerical and Date Axis Labels: not bold, lighter gray */
 .axis-text {
-  fill: var(--axis-hex);
-  font-size: 10px;
+  fill: var(--axis-numerical-hex);
+  font-size: 11px;
+  font-weight: 400;
 }
 
 .axis-text.x {
@@ -39,8 +44,9 @@ h1 {
   text-anchor: end;
 }
 
+/* Category Axis Labels: bold, brighter gray */
 .axis-label {
-  fill: var(--axis-hex);
+  fill: var(--axis-category-hex);
   font-size: 12px;
   font-weight: 600;
 }
@@ -54,10 +60,10 @@ h1 {
 }
 
 .legend {
-  fill: var(--axis-hex);
+  fill: var(--axis-numerical-hex);
   text-anchor: start;
-  font-size: 12px;
-  font-weight: 600;
+  font-size: 11px;
+  font-weight: 400;
 }
 
 .tooltip {

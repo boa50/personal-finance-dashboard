@@ -19,8 +19,12 @@ interface ChartProps {
 
 const LineChart = ({ data, svgDims: propSvgDims, title }: ChartProps) => {
     const { containerRef, svgDims } = useResponsiveDims(propSvgDims, 320)
-    const margin = { ...defaultMargin }
-    margin.left = 86
+    const margin = {
+        top: 16,
+        right: 24,
+        bottom: 32,
+        left: 68
+    }
     const { width, height } = getDims({ svgDims, margin })
     const [interactionData, setInteractiondata] = useState<InteractionData | null>(null)
 
@@ -61,7 +65,8 @@ const LineChart = ({ data, svgDims: propSvgDims, title }: ChartProps) => {
             <text
                 className='axis-text y'
                 x={width}
-                y={y(meanValue) + 10}
+                y={y(meanValue) + 12}
+                dominantBaseline='central'
                 alignmentBaseline='central'
             >
                 {`Average: ${BRL.format(meanValue)}`}
