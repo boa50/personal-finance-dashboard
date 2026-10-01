@@ -62,28 +62,28 @@ h1 {
 
 .tooltip {
   position: absolute;
-  background-color: rgba(0, 0, 0, 0.8);
-  border-radius: 4px;
+  background-color: rgba(0, 0, 0, 0.85);
+  border-radius: 6px;
   color: white;
   font-size: 12px;
-  padding: 4px;
-  margin-left: 15px;
+  padding: 6px 10px;
+  margin: 0;
+  pointer-events: none;
+  z-index: 50;
+  white-space: nowrap;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.4), 0 2px 4px -2px rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.12);
 }
 
-.tooltip.default {
-  transform: translate(-50%, -50%);
-}
-
-.tooltip.bar {
-  transform: translate(-50%, -25%);
-}
-
+.tooltip.default,
+.tooltip.bar,
 .tooltip.line {
-  transform: translate(10%, -50%);
+  transform: none;
 }
 
 .tooltip>.label {
   font-weight: 700;
+  margin-bottom: 2px;
 }
 
 .line {
