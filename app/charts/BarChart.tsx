@@ -19,29 +19,34 @@ interface ChartProps {
     axis?: boolean
 }
 
-const BarChart = ({ data, svgDims: propSvgDims, title, legend = true, axis = true }: ChartProps) => {
+const BarChart = ({ data, svgDims: propSvgDims, title, legend = false, axis = true }: ChartProps) => {
     const { containerRef, svgDims } = useResponsiveDims(propSvgDims, 400)
-    const margin = { ...defaultMargin }
-    margin.bottom = 64
-    margin.left = 72
+    const margin = {
+        top: 16,
+        right: 24,
+        bottom: 32,
+        left: svgDims.width < 360 ? 100 : 115
+    }
     const { width, height } = getDims({ svgDims, margin })
     const [interactionData, setInteractiondata] = useState<InteractionData | null>(null) 
 
+    const labels = useMemo(() => {
+        return [...new Set(data.sort((a, b) => b.value - a.value).map(d => d.label))]
+    }, [data])
+
     const y = useMemo(() => {
-        return d3
-            .scaleLinear()
-            .domain([0, (d3.max(data, d => (d.value)) as number) * 1.05])
-            .range([height, 0])
-    }, [data, height])
-
-    const x = useMemo(() => {
-        const labels = [...new Set(data.sort((a, b) => b.value - a.value).map(d => d.label))]
-
         return d3
             .scaleBand()
             .domain(labels)
-            .range([0, width])
+            .range([0, height])
             .padding(barPadding)
+    }, [labels, height])
+
+    const x = useMemo(() => {
+        return d3
+            .scaleLinear()
+            .domain([0, (d3.max(data, d => d.value) as number) * 1.05])
+            .range([0, width])
     }, [data, width])
 
     const categories = useMemo(() => {return [...new Set(data.map(d => d.category))]}, [data]) 
@@ -54,17 +59,18 @@ const BarChart = ({ data, svgDims: propSvgDims, title, legend = true, axis = tru
     }, [categories])
 
     const bars = data.map((d, i) => {
-        const xPos = x(d.label)
-        if (xPos === undefined) {
+        const yPos = y(d.label)
+        if (yPos === undefined) {
             return null
         }
+        const barWidth = x(d.value)
     
         return (
             <g key={i}
                 onMouseEnter={() =>
                     setInteractiondata({
-                        xPos: x(d.label) as number,
-                        yPos: y(d.value),
+                        xPos: barWidth,
+                        yPos: yPos + y.bandwidth() / 2,
                         label: d.label,
                         value: BRL.format(d.value)
                     })
@@ -72,19 +78,21 @@ const BarChart = ({ data, svgDims: propSvgDims, title, legend = true, axis = tru
                 onMouseLeave={() => setInteractiondata(null)}
             >
                 <rect
-                    x={x(d.label)}
-                    y={y(d.value)}
-                    width={x.bandwidth()}
-                    height={y(0) - y(d.value)}
+                    x={0}
+                    y={yPos}
+                    width={barWidth}
+                    height={y.bandwidth()}
                     fill={colour(d.category) as string}
                     fillOpacity={0.9}
-                    rx={3} />
+                    rx={3}
+                    className='opacity-90 hover:opacity-100 transition-opacity'
+                />
                 <text
-                    x={xPos}
-                    y={y(0) + 7}
+                    x={-10}
+                    y={yPos + y.bandwidth() / 2}
                     className='axis-label bar'
+                    dominantBaseline='central'
                     alignmentBaseline='central'
-                    transform={`rotate(-20 ${xPos + 7} ${y(0) - x.bandwidth() * 1.25})`}
                 >
                     {d.label}
                 </text>
@@ -132,14 +140,16 @@ const BarChart = ({ data, svgDims: propSvgDims, title, legend = true, axis = tru
                 margin={margin}
                 interactionData={interactionData}
             >
+                <line x1={0} x2={0} y1={0} y2={height} className='axis-line' />
                 {bars}
                 {axis ? 
                     <Axis
                         width={width}
                         height={height}
                         margin={margin}
-                        y={y}
-                        yFormatter={(value: number) => BRL.format(value, true)} /> 
+                        x={x}
+                        xTicks={svgDims.width < 360 ? 3 : 5}
+                        xFormatter={(value: number) => BRL.format(value, true)} /> 
                     : null}
                 {legend ? legendGroup : null}
             </BaseChart>
