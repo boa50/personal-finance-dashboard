@@ -55,6 +55,14 @@ const TreemapChart = ({ data, svgDims: propSvgDims, title }: ChartProps) => {
         const tileHeight = leaf.y1 - leaf.y0
         const showLabel = tileWidth > 45 && tileHeight > 24
 
+        // Responsive font size and padding according to tile dimensions
+        const fontSize = tileWidth >= 160 && tileHeight >= 100 ? 15 : tileWidth >= 90 && tileHeight >= 50 ? 14 : 12
+        const paddingTop = tileHeight >= 100 ? 16 : 12
+        const paddingX = tileWidth < 70 ? 8 : (tileWidth >= 180 ? 16 : 12)
+
+        const words = leaf.data.label.split(' ')
+        const shouldWrap = words.length > 1 && tileWidth < 80
+
         return (
             <g key={`leaf-${leaf.data.label}`}
                 onMouseEnter={() =>
@@ -79,15 +87,28 @@ const TreemapChart = ({ data, svgDims: propSvgDims, title }: ChartProps) => {
                 />
                 {showLabel ? (
                     <text
-                        x={leaf.x0 + 8}
-                        y={leaf.y0 + 8}
-                        fontSize={11}
+                        x={leaf.x0 + paddingX}
+                        y={leaf.y0 + paddingTop}
+                        fontSize={fontSize}
                         textAnchor='start'
+                        dominantBaseline='hanging'
                         alignmentBaseline='hanging'
                         fill='white'
-                        className='font-medium'
+                        className='font-semibold select-none pointer-events-none'
                     >
-                        {leaf.data.label}
+                        {shouldWrap ? (
+                            words.map((word, idx) => (
+                                <tspan
+                                    key={idx}
+                                    x={leaf.x0 + paddingX}
+                                    dy={idx === 0 ? 0 : `${fontSize * 1.25}px`}
+                                >
+                                    {word}
+                                </tspan>
+                            ))
+                        ) : (
+                            leaf.data.label
+                        )}
                     </text>
                 ) : null}
             </g>
